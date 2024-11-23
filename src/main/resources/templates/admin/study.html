@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>MMS - 관리자</title>
+<link href="/css/admin/styles.css" rel="stylesheet" />
+<script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+	crossorigin="anonymous"></script>
+<script src="/js/admin/datatables-simple-demo.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Moment.js -->
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Date Range Picker CSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<!-- Date Range Picker JavaScript -->
+<script
+	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+
+<script src="/js/admin/scripts.js"></script>
+<script src="/js/admin/study.js"></script>
+</head>
+<body class="sb-nav-fixed">
+	<!-- 네비게이션바 -->
+	<nav th:replace="~{admin/navbar :: adminNavbarFragment}"></nav>
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			<!-- 사이드 네비게이션바 -->
+			<nav th:replace="~{admin/sideNavbar :: adminSideNavbarFragment}"></nav>
+		</div>
+		<div id="layoutSidenav_content">
+			<main>
+				<div class="container-fluid px-4">
+					<div
+						class="d-flex justify-content-between align-items-center flex-wrap">
+						<!-- 중앙 정렬된 제목 -->
+						<div class="text-center">
+							<h1 class="mt-4 mb-4">스터디 승인요청</h1>
+						</div>
+
+						<!-- 검색 입력과 날짜 선택기가 오른쪽에 나란히 위치 -->
+						<div class="d-flex align-items-end gap-3 pr-5">
+							<!-- 날짜 선택기 -->
+							<div class="input-group date">
+								<input type="text" class="form-control  daterange-picker col-2"
+									placeholder="Select a date"> <span
+									class="input-group-append"> <span
+									class="input-group-text " style="font-size: 1.5em;"><i
+										class="fas fa-calendar-alt"></i></span>
+								</span>
+							</div>
+
+							<!-- 검색 입력과 버튼 -->
+							<div class="input-group">
+								<form th:action="@{/admin/study}" method="get"
+									class="d-flex align-items-end">
+									<select class="form-select" name="type"
+										aria-label="Search Type" th:value="${type}">
+										<option value="All">전체</option>
+										<option value="pending">대기</option>
+										<option value="approved">승인됨</option>
+										<option value="rejected">거절됨</option>
+									</select> <input type="text" class="form-control " name="searchQuery"
+										placeholder="검색어를 입력하세요" th:value="${searchQuery}">
+									<!-- 날짜 전송 숨기기 -->
+									<input type="hidden" name="startDate"> <input
+										type="hidden" name="endDate">
+									<button class="btn btn-primary" type="submit">검색</button>
+								</form>
+							</div>
+						</div>
+					</div>
+
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th scope="col"></th>
+								<th scope="col">스터디그룹</th>
+								<th scope="col">신청일자</th>
+								<th scope="col">승인여부</th>
+								<th scope="col">승인/거절</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr th:each="group, iterStat : ${data}">
+								<th scope="row"
+									th:text="${currentPage * size + iterStat.index + 1}">1</th>
+								<td th:text="${group.name}">Group Name</td>
+								<td
+									th:text="${#temporals.format(group.createdAt, 'yyyy-MM-dd HH:mm')}"></td>
+								<td th:text="${group.status}" class="status-cell"></td>
+								<td>
+									<!-- 상태가 PENDING일 때만 버튼 표시 -->
+									<button type="button"
+										class="btn btn-outline-info approve-btn  btn-sm "
+										th:if="${group.status == 'PENDING'}"
+										th:attr="data-id=${group.id}, data-status='approve'">승인</button>
+									<button type="button"
+										class="btn btn-outline-secondary reject-btn  btn-sm "
+										th:if="${group.status == 'PENDING'}"
+										th:attr="data-id=${group.id}, data-status='reject'">거절</button>
+									<a th:if="${group.status != 'PENDING'}">완료</a>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+					<!-- 페이징 처리 -->
+					<div th:if="${totalPages > 1}">
+						<ul class="pagination justify-content-center">
+
+							<!-- 이전 페이지 링크 (5 페이지씩 이동) -->
+							<li class="page-item"
+								th:classappend="${startPage == 0} ? 'disabled'"><a
+								class="page-link"
+								th:href="@{/admin/study(page=${previousPage}, type=${type})}">
+									<span>이전</span>
+							</a></li>
+
+							<!-- 페이지 번호 링크 -->
+							<li th:each="page : ${#numbers.sequence(startPage, endPage)}"
+								th:classappend="${page == currentPage} ? 'active'"
+								class="page-item"><a th:text="${page + 1}"
+								class="page-link"
+								th:href="@{/admin/study(page=${page}, type=${type})}"></a></li>
+
+							<!-- 다음 페이지 링크 (5 페이지씩 이동) -->
+							<li class="page-item"
+								th:classappend="${endPage == totalPages - 1} ? 'disabled'">
+								<a class="page-link"
+								th:href="@{/admin/study(page=${nextPage}, type=${type})}"> <span>다음</span>
+							</a>
+							</li>
+						</ul>
+					</div>
+
+					<!-- 	<div style="height: 100vh"></div>
+					<div class="card mb-4">
+						<div class="card-body">When scrolling, the navigation stays
+							at the top of the page. This is the end of the static navigation
+							demo.</div>
+					</div> -->
+				</div>
+			</main>
+			<!-- <footer class="py-4 bg-light mt-auto">
+				<div class="container-fluid px-4">
+					<div
+						class="d-flex align-items-center justify-content-between small">
+						<div class="text-muted">Copyright &copy; Your Website 2023</div>
+						<div>
+							<a href="#">Privacy Policy</a> &middot; <a href="#">Terms
+								&amp; Conditions</a>
+						</div>
+					</div>
+				</div>
+			</footer> -->
+
+		</div>
+	</div>
+
+</body>
+</html>

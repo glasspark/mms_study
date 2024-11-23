@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>MMS - 모두모여스터디</title>
+<!-- Favicon-->
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+<!-- Custom Google font-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+	rel="stylesheet" />
+<!-- Bootstrap icons-->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+	rel="stylesheet" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="/css/styles.css" rel="stylesheet" />
+<!-- Bootstrap core JS-->
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+<script src="/js/createGroup.js"></script>
+<!--  ck 에디터 설정 -->
+<!-- <script
+	src="https://cdn.ckeditor.com/ckeditor5/41.3.1/classic/ckeditor.js"></script>
+<script
+	src="https://cdn.ckeditor.com/ckeditor5/34.0.0/classic/translations/ko.js"></script>
+<style type="text/css">
+.ck-editor__editable {
+	height: 400px;
+	line-height: 23px;
+}
+</style> -->
+</head>
+<body class="d-flex flex-column h-100 bg-light">
+	<main class="flex-shrink-0">
+		<!-- 네비게이션바 -->
+		<nav th:replace="~{navbar :: navbarFragment}"></nav>
+		<!-- Page Content-->
+		<div class="container px-5 my-5">
+			<div class="text-center mb-5">
+				<h1 class="display-5 fw-bolder mb-0">
+					<span class="text-gradient d-inline"
+						th:text="${groupDTO.id != null ? '스터디그룹 수정하기' : '스터디그룹 생성하기'}">스터디그룹
+						생성하기</span>
+				</h1>
+				<!-- 	<span class="text-gradient d-inline">스터디그룹 생성하기</span> -->
+			</div>
+			<div class="row gx-5 justify-content-center">
+				<div class="col-lg-11 col-xl-9 col-xxl-8">
+					<form id="saveForm" method="post" th:object="${groupDTO}">
+						<input type="hidden" th:field="*{id}" />
+						<div class="writeName">
+							<div class="col-sm-10">
+								<label for="name" class="form-label mt-4">스터디 그룹 이름</label> <input
+									type="text" th:field="*{name}" class="form-control" id="name"
+									placeholder="스터디 그룹 이름을 입력하세요 (최대 20자)" required>
+								<div th:if="${#fields.hasErrors('name')}" th:errors="*{name}"
+									style="color: red"></div>
+							</div>
+						</div>
+						<div
+							class="d-flex align-items-center justify-content-between mb-1">
+							<div class="col-6">
+								<label for="subLeader" class="form-label mt-4">부반장</label> <input
+									type="text" th:field="*{subLeader}" class="form-control"
+									id="subLeader" placeholder="아이디 입력(생략가능)">
+								<!-- 부반장은 선택 필드로 유효성 검사가 없으므로 오류 메시지가 필요 없습니다 -->
+							</div>
+
+							<div class="col-6">
+								<div class="ps-3">
+									<label for="maxMembers" class="form-label mt-4">최대 인원 수</label>
+									<input type="number" th:field="*{maxMembers}"
+										class="form-control" id="maxMembers" min="1" max="20"
+										placeholder="최대 20명" required>
+									<div th:if="${#fields.hasErrors('maxMembers')}"
+										th:errors="*{maxMembers}" style="color: red"></div>
+								</div>
+							</div>
+						</div>
+
+						<div class="studyGroupTag">
+
+							<!-- 숨겨진 필드 추가 (태그 데이터를 저장) -->
+							<input type="hidden" name="studyTag" id="tagsField" />
+
+							<div class="col-sm-10">
+								<label for="tags" class="form-label mt-4">태그 (최대 5개)</label> <input
+									type="text" th:field="*{tag}" class="form-control" id="tags"
+									placeholder="태그를 입력해 주세요(생략 가능)">
+
+								<!-- 태그가 추가되는 영역 -->
+								<ul id="tagList" class="list-inline mt-2"></ul>
+
+								<div th:if="${#fields.hasErrors('tag')}" th:errors="*{tag}"
+									style="color: red"></div>
+							</div>
+						</div>
+
+						<div class="contentsArea">
+							<label for="description" class="form-label mt-4">스터디 그룹
+								설명</label>
+							<textarea th:field="*{description}" class="form-control"
+								id="description" rows="3" maxlength="200" required
+								placeholder="스터디 그룹 설명을 입력하세요 (최대 200자)"></textarea>
+							<div th:if="${#fields.hasErrors('description')}"
+								th:errors="*{description}" style="color: red"></div>
+							<small id="emailHelp" class="form-text text-muted">스터디
+								그룹은 관리자의 승인 후 게시판에 등록이 됩니다.</small>
+						</div>
+						<div class="buttons d-flex justify-content-end mt-3">
+							<button type="button" class="btn btn-secondary" id="cancel">취소</button>
+							<button type="button" class="btn btn-info ms-2" id="register">등록</button>
+						</div>
+					</form>
+					<div class="pb-5"></div>
+					<!-- Skills Section-->
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- Footer-->
+	<footer class="bg-white py-4 mt-auto">
+		<div class="container px-5">
+			<div
+				class="row align-items-center justify-content-between flex-column flex-sm-row">
+				<div class="col-auto">
+					<div class="small m-0">Copyright &copy; Your Website 2023</div>
+				</div>
+				<div class="col-auto">
+					<a class="small" href="#!">Privacy</a> <span class="mx-1">&middot;</span>
+					<a class="small" href="#!">Terms</a> <span class="mx-1">&middot;</span>
+					<a class="small" href="#!">Contact</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+
+</body>
+
+<!-- 
+<script>
+		let editor; 
+
+        ClassicEditor
+            .create(document.querySelector('#ck-editor'), { //내용을 입력받는 textarea의 아이디나 클래스 입력
+                extraPlugins: [MyCustomUploadAdapterPlugin]
+            })
+            .then(newEditor => {
+                editor = newEditor;
+            })
+            .catch(error => {
+
+                console.error(error);
+
+            });
+
+        class UploadAdapter {
+            constructor(loader) {
+                this.loader = loader;
+            }
+
+            upload() {
+                return this
+                    .loader
+                    .file
+                    .then(file => new Promise(((resolve, reject) => {
+                        this._initRequest();
+                        this._initListeners(resolve, reject, file);
+                        this._sendRequest(file);
+                    })))
+            }
+
+            //파일 임시 저장
+            _initRequest() {
+                const xhr = this.xhr = new XMLHttpRequest();
+                xhr.open('POST', '/user/uploadImage', true);
+                xhr.responseType = 'json';
+            }
+
+            _initListeners(resolve, reject) {
+                const xhr = this.xhr;
+                const loader = this.loader;
+                const genericErrorText = '파일을 업로드 할 수 없습니다.'
+
+                xhr.addEventListener('error', () => {
+                    reject(genericErrorText)
+                })
+                xhr.addEventListener('abort', () => reject())
+                xhr.addEventListener('load', () => {
+                    const response = xhr.response
+                    if (!response || response.error) {
+                        return reject(
+                            response && response.error
+                                ? response.error.message
+                                : genericErrorText
+                        );
+                    }
+
+                    resolve({
+                    	default: "/upload" + response.url //로컬
+                   //   default: response.url //업로드된 파일 주소[라이브]
+                    })
+                })
+            }
+
+            _sendRequest(file) {
+                const data = new FormData()
+                data.append('boardImg', file)
+                this
+                    .xhr
+                    .send(data)
+            }
+        }
+
+        function MyCustomUploadAdapterPlugin(editor) {
+            editor
+                .plugins
+                .get('FileRepository')
+                .createUploadAdapter = (loader) => {
+                    return new UploadAdapter(loader)
+                }
+            }
+    </script> -->
+</html>

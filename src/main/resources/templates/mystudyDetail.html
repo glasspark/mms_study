@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>MMS - 모두모여스터디</title>
+<!-- Favicon-->
+<link rel="icon" type="image/x-icon" href="assets/favicon.ico" />
+<!-- Custom Google font-->
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link
+	href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@100;200;300;400;500;600;700;800;900&amp;display=swap"
+	rel="stylesheet" />
+<!-- Bootstrap icons-->
+<link
+	href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.8.1/font/bootstrap-icons.css"
+	rel="stylesheet" />
+<!-- Core theme CSS (includes Bootstrap)-->
+<link href="/css/styles.css" rel="stylesheet" />
+<link href="/css/mystudyDetail.css" rel="stylesheet" />
+<!-- FullCalendar CSS -->
+<link
+	href="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.css"
+	rel="stylesheet" />
+<!-- FullCalendar JS -->
+<script
+	src="https://cdn.jsdelivr.net/npm/fullcalendar@5.10.1/main.min.js"></script>
+<!-- 아이콘 사용 -->
+<link rel="stylesheet"
+	href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+<!-- Bootstrap core JS-->
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Core theme JS-->
+<script src="/js/mystudyDetail.js"></script>
+</head>
+<body class="d-flex flex-column h-100 bg-light">
+	<main class="flex-shrink-0">
+		<!-- 네비게이션바 -->
+		<nav th:replace="~{navbar :: navbarFragment}"></nav>
+		<!-- Page Content-->
+		<div class="container px-0 my-2" style="max-width: 1800px;">
+
+			<div class="row gx-5 justify-content-center">
+				<div class="col-lg-11 col-xl-9 col-xxl-8">
+					<!-- Experience Section-->
+					<section>
+						<div class="container-fluid">
+							<input type="hidden" id="groupId" th:value="${groupId}">
+							<div class="row mt-3">
+								<!-- Sidebar Section -->
+								<div class="col-md-2 col-lg-2 bg-white rounded-4 shadow-sm ">
+									<ul class="nav flex-column" id="sidebar">
+										<li class="nav-item mb-2 mt-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="study"> <i
+												class="bi bi-info-circle-fill me-2"></i>스터디
+										</a></li>
+										<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="members"> <i class="bi bi-people-fill me-2"></i>멤버
+										</a></li>
+										<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="schedule"> <i
+												class="bi bi-calendar-event-fill me-2"></i>일정
+										</a></li>
+										<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="resources"> <i
+												class="bi bi-folder-fill me-2"></i>공유 파일
+										</a></li>
+										<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="board"> <i
+												class="bi bi-chat-left-text-fill me-2"></i>게시판
+										</a></li>
+										<!-- 				<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="application"> <i
+												class="bi bi-plus-circle me-2"></i> 가입신청
+										</a></li> -->
+										<!-- 가입신청 버튼은 LEADER 또는 SUB_LEADER일 경우 보임 -->
+										<li class="nav-item mb-2"
+											th:if="${userRole == 'LEADER' || userRole == 'SUB_LEADER'}">
+											<a class="nav-link text-dark rounded-2" href="#"
+											data-target="application"> <i
+												class="bi bi-plus-circle me-2"></i> 가입신청
+										</a>
+										</li>
+
+										<!-- 스터디 삭제 버튼은 LEADER일 경우에만 보임 -->
+										<li class="nav-item mb-2" th:if="${userRole == 'LEADER'}">
+											<a class="nav-link text-dark rounded-2" href="#"
+											data-target="delete"> <i class="bi bi-trash me-2"></i>
+												스터디 삭제
+										</a>
+										</li>
+										<!-- 	<li class="nav-item mb-2"><a
+											class="nav-link text-dark rounded-2" href="#"
+											data-target="delete"> <i class="bi bi-trash me-2"></i>
+												스터디 삭제
+										</a></li> -->
+									</ul>
+								</div>
+
+								<!-- Content Section -->
+								<div class="col-md-10 col-lg-10 ps-4">
+									<div class="card border-0 rounded-4">
+										<div class="card-body" id="content">
+											<!-- Default content -->
+											<div id="study" class="content-section d-none">
+												<h3 class="fw-bold">스터디 이름 입니다.</h3>
+												<hr>
+											</div>
+											<div id="members" class="content-section d-none">
+												<h3 class="fw-bold">활동 멤버</h3>
+												<!-- 공유 파일 리스트 섹션 -->
+												<div id="memberListSection" class="mt-4">
+													<ul id="memberList" class="list-group">
+														<!-- 파일 리스트 아이템이 여기에 동적으로 추가됩니다 -->
+													</ul>
+												</div>
+											</div>
+											<div id="schedule" class="content-section d-none">
+												<h3 class="fw-bold">일정 내용</h3>
+												<div class="card-body">
+													<div id="calendar" style="height: 100%;"></div>
+													<!-- 달력 표시 영역 -->
+												</div>
+											</div>
+											<div id="resources" class="content-section d-none">
+												<div
+													class="d-flex justify-content-between align-items-center">
+													<h3 class="fw-bold">공유 파일</h3>
+													<!-- 등록하기 버튼 -->
+													<button id="toggleUploadModal" class="btn btn-primary"
+														data-bs-toggle="modal" data-bs-target="#uploadModal">등록하기</button>
+												</div>
+
+												<!-- 파일 업로드 모달 -->
+												<div class="modal fade" id="uploadModal" tabindex="-1"
+													aria-labelledby="uploadModalLabel" aria-hidden="true">
+													<div class="modal-dialog">
+														<div class="modal-content">
+															<div class="modal-header">
+																<h5 class="modal-title" id="uploadModalLabel">파일
+																	등록하기</h5>
+																<button type="button" class="btn-close"
+																	data-bs-dismiss="modal" aria-label="Close"></button>
+															</div>
+															<div class="modal-body">
+																<form id="groupFileUploadForm"
+																	enctype="multipart/form-data">
+																	<div class="mb-3">
+																		<label for="fileTitle" class="form-label">제목</label> <input
+																			type="text" id="fileTitle" name="title"
+																			class="form-control" required>
+																	</div>
+																	<div class="mb-3">
+																		<label for="groupFile" class="form-label">파일
+																			업로드</label> <input type="file" id="groupFile" name="file"
+																			class="form-control" required>
+																	</div>
+																	<button type="button" id="uploadButton"
+																		class="btn btn-success">파일 등록</button>
+																</form>
+															</div>
+														</div>
+													</div>
+												</div>
+
+												<!-- 공유 파일 리스트 섹션 -->
+												<div id="fileListSection" class="mt-4">
+													<ul id="fileList" class="list-group">
+														<!-- 파일 리스트 아이템이 여기에 동적으로 추가됩니다 -->
+													</ul>
+												</div>
+											</div>
+											<div id="board" class="content-section d-none">
+												<div
+													class="d-flex justify-content-between align-items-center">
+													<h3 class="fw-bold">게시판 내용</h3>
+													<button id="createPostBtn" class="btn btn-primary">작성하기</button>
+												</div>
+												<p>게시판에 대한 상세 정보가 나온다.</p>
+											</div>
+
+											<div id="application" class="content-section d-none">
+												<h3 class="fw-bold">가입신청</h3>
+												<hr>
+												<div id="applicationListContainer">
+													<p>가입신청에 대한 상세 정보가 나온다.</p>
+												</div>
+
+											</div>
+											<div id="delete" class="content-section d-none">
+												<h3 class="fw-bold">스터디 삭제 내용</h3>
+												<p>스터디 삭제에 대한 상세 정보가 나온다.</p>
+											</div>
+										</div>
+									</div>
+								</div>
+							</div>
+					</section>
+
+					<!-- Divider-->
+					<div class="pb-5"></div>
+
+				</div>
+			</div>
+		</div>
+	</main>
+	<!-- Footer-->
+	<footer class="bg-white py-4 mt-auto">
+		<div class="container px-5">
+			<div
+				class="row align-items-center justify-content-between flex-column flex-sm-row">
+				<div class="col-auto">
+					<div class="small m-0">Copyright &copy; Your Website 2023</div>
+				</div>
+				<div class="col-auto">
+					<a class="small" href="#!">Privacy</a> <span class="mx-1">&middot;</span>
+					<a class="small" href="#!">Terms</a> <span class="mx-1">&middot;</span>
+					<a class="small" href="#!">Contact</a>
+				</div>
+			</div>
+		</div>
+	</footer>
+</body>
+
+</html>
+
+
