@@ -13,8 +13,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.dto.CreateStudyGroupDTO;
+import com.study.mms.dto.StudyBoardDTO;
 import com.study.mms.dto.StudyGroupDTO;
 import com.study.mms.model.User;
+import com.study.mms.service.StudyGroupDetailService;
 import com.study.mms.service.StudyGroupService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class MainController {
 
 	private final StudyGroupService studyGroupService;
+	private final StudyGroupDetailService studyGroupDetailService;
 
 	// 메인페이지
 	@GetMapping("/")
@@ -106,21 +109,41 @@ public class MainController {
 		String userRole = studyGroupService.isUserMemberOfRole(principalDetail, groupId);
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("userRole", userRole);
+		
+		
+		
 		return "mystudyDetail";
 	}
 
 	// 내 스터디 그룹 상세 게시판 글 작성 혹은 수정
-	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
+	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId) && (#boardId == null || @studyGroupService.isUserAuthorOfBoardInGroup( #principalDetail, #groupId,#boardId ))")
 	@GetMapping("/mystudy/detail/board/{groupId}")
 	public String studyBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,
 			@PathVariable("groupId") Integer groupId,
 			@RequestParam(value = "boardId", required = false) Integer boardId, Model model) {
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("boardId", boardId);
-		//여기서 게시판 내용 찾아서 model 로 전달
-		//user model 과 매핑 안시킴.. 하핫 안시켜도 확인은 가능 할듯? 스터디 그룹 엔티티 타고 가면 가능
-		//그러나 내가 작성한 글인지 확인은 불가능 하니 생성하자 하핫
+		if(boardId != null) {
+			StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
+			model.addAttribute("boardDetail", boardDetail);
+		}
+		// 수정 들어가야 합니다.
 		return "studyBoard";
+	}
+
+	// 내 스터디 그룹 게시판 글 상세보기 페이지
+	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
+	@GetMapping("/mystudy/detail/board/{groupId}/{boardId}")
+	public String studyBoardContent(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@PathVariable("groupId") Integer groupId, @PathVariable("boardId") Integer boardId, Model model) {
+
+		StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
+
+		model.addAttribute("groupId", groupId);
+		model.addAttribute("boardId", boardId);
+		model.addAttribute("boardDetail", boardDetail);
+
+		return "studyBoardDetail";
 	}
 
 	// 스터디 그룹 생성 및 수정

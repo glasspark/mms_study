@@ -9,6 +9,10 @@ import java.util.stream.Collectors;
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
@@ -51,9 +55,10 @@ public class StudyGroupDetailService {
 	private final StudyGroupJoinRequestRepository joinRequestRepository;
 	private final UploadedFileRepository uploadedFileRepository;
 	private final StudyBoardRepository studyBoardRepository;
+	private final StudyGroupService studyGroupService;
 
 	@Transactional
-	public Map<String, Object> test(Authentication authentication, CreateStudyGroupDTO groupDTO) {
+	public Map<String, Object> test(PrincipalDetail principalDetail) {
 		Map<String, Object> returnMap = new HashMap<>();
 
 		try {
@@ -584,7 +589,8 @@ public class StudyGroupDetailService {
 
 	// 스터디 그룹 상세 게시판 저장
 	@Transactional
-	public Map<String, Object> saveStudyBoard(StudyBoardDTO board, HttpServletRequest req) {
+	public Map<String, Object> saveStudyBoard(PrincipalDetail principalDetail, StudyBoardDTO board,
+			HttpServletRequest req) {
 		Map<String, Object> returnMap = new HashMap<>();
 		try {
 			StudyBoard getBoard;
@@ -592,6 +598,8 @@ public class StudyGroupDetailService {
 			// 스터디 존재 여부 확인
 			StudyGroup studyGroup = studyGroupRepository.findById(board.getGroupId())
 					.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
+
+			User user = principalDetail.getUser();
 
 			// 기존 게시글이 존재하는 경우 (업데이트)
 			if (board.getId() != null && board.getId() != 0) {
@@ -628,6 +636,7 @@ public class StudyGroupDetailService {
 			getBoard.setContent(board.getContent().replace("/upload/temp/", "/upload/studyBoard/")); // 임시 폴더의 이미지 경로
 																										// 업데이트
 			getBoard.setStudyGroup(studyGroup); // 스터디 그룹 정보 넣기
+			getBoard.setUser(user);
 
 			// 이미지 경로 수정 (임시 폴더에서 정식 폴더로 이동)
 			String[] imgName = board.getImg().split(",");
@@ -653,4 +662,108 @@ public class StudyGroupDetailService {
 		return returnMap;
 	}
 
+	// 스터디 그룹 상세 게시판 페이징 처리
+	@Transactional
+	public Map<String, Object> getStudyBoardLists(PrincipalDetail principalDetail, Integer page, Integer groupId) {
+		Map<String, Object> returnMap = new HashMap<>();
+
+		try {
+
+			Pageable pageable = PageRequest.of(page, 8, Sort.by(Sort.Direction.DESC, "createdAt"));
+
+			Page<StudyBoard> boardLists = studyBoardRepository.findByStudyGroupId(groupId, pageable);
+
+			// StudyBoard -> StudyBoardDTO 변환
+			Page<StudyBoardDTO> boardDTOLists = boardLists
+					.map(board -> StudyBoardDTO.builder().id(board.getId()).title(board.getTitle())
+							.groupId(board.getStudyGroup() != null ? board.getStudyGroup().getId() : null)
+							.nickName(board.getUser() != null ? board.getUser().getNickname() : null).build());
+
+			returnMap.put("status", "success");
+			returnMap.put("message", "조회되었습니다.");
+			returnMap.put("data", boardDTOLists.getContent());
+			returnMap.put("totalPages", boardDTOLists.getTotalPages());
+			returnMap.put("number", boardDTOLists.getNumber());
+			returnMap.put("size", boardDTOLists.getSize());
+			returnMap.put("totalElements", boardDTOLists.getTotalElements());
+			returnMap.put("first", boardDTOLists.isFirst());
+			returnMap.put("last", boardDTOLists.isLast());
+
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생했습니다.");
+			e.printStackTrace();
+		}
+
+		return returnMap;
+	}
+
+	@Transactional
+	public StudyBoardDTO getStudyBoardDetail(PrincipalDetail principalDetail, Integer groupId, Integer boardId) {
+
+		Optional<StudyBoard> optBoard = studyBoardRepository.findByStudyGroupIdAndId(groupId, boardId);
+
+		// 게시글이 없을 경우 예외 처리
+		if (optBoard.isEmpty()) {
+			throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+		}
+
+		StudyBoard board = optBoard.get();
+
+		// 작성자 여부 확인
+		boolean isAuthor = board.getUser().getId().equals(principalDetail.getUser().getId());
+
+		// DTO 변환 및 작성자 정보 포함
+		return StudyBoardDTO.builder().id(board.getId()).title(board.getTitle()).content(board.getContent())
+				.img(board.getImg()).groupId(board.getStudyGroup() != null ? board.getStudyGroup().getId() : null)
+				.nickName(board.getUser() != null ? board.getUser().getNickname() : null).isAuthor(isAuthor)
+				.createdAt(board.getCreatedAt()) // 작성자 여부
+				.build();
+
+	}
+
+	// 스터디 그룹 게시판 글 삭제
+	@Transactional
+	public Map<String, Object> deleteStudyBoardDetail(PrincipalDetail principalDetail, Integer groupId, Integer boardId,
+			HttpServletRequest req) {
+		Map<String, Object> returnMap = new HashMap<>();
+
+		try {
+
+			// 유효성 검사: 사용자가 그룹의 게시글 작성자인지 확인
+			boolean isAuthor = studyGroupService.isUserAuthorOfBoardInGroup(principalDetail, groupId, boardId);
+
+			if (!isAuthor) {
+				returnMap.put("status", "error");
+				returnMap.put("message", "권한이 없습니다.");
+			}
+
+			Optional<StudyBoard> optBoard = studyBoardRepository.findByStudyGroupIdAndId(groupId, boardId);
+
+			// 게시글이 없을 경우 예외 처리
+			if (optBoard.isEmpty()) {
+				throw new IllegalArgumentException("게시글이 존재하지 않습니다.");
+			}
+
+			StudyBoard getBoard = optBoard.get();
+
+			// 기존 이미지 목록 가져오기
+			String[] imgList = getBoard.getImg().split(",");
+			if (imgList != null) {
+				for (String s : imgList) {
+					ImageUploader.deleteImage(req, "/upload/studyBoard/" + s);
+				}
+			}
+			studyBoardRepository.delete(getBoard);
+			
+			returnMap.put("status", "success");
+			returnMap.put("message", "삭제되었습니다.");
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생했습니다.");
+			e.printStackTrace();
+		}
+
+		return returnMap;
+	}
 }

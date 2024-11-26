@@ -1,12 +1,15 @@
 $(document).ready(function() {
 
+	getFileList(); //공유 파일 리스트 
+	getMemberList();//멤버들의 리스트
+	getApplicationLists(); //일정 리스트
+	getBoardList(); //게시판 리스트 가져오기
 
 	// 작성하기 버튼 클릭 시 페이지 이동 이벤트
 	$('#createPostBtn').on('click', function() {
 		let num = $('#groupId').val(); // groupId 값 가져오기
 		window.location.href = `/mystudy/detail/board/${num}`;
 	});
-
 
 	//사이드바
 	const defaultSection = localStorage.getItem('activeSection') || 'study';
@@ -41,6 +44,12 @@ $(document).ready(function() {
 		if (target === 'resources') {
 			getFileList(); //공유 파일 리스트 
 		}
+
+		if (target === 'board') {
+			getBoardList();
+		}
+
+
 
 		// If the schedule section is clicked, adjust the calendar size
 		if (target === 'schedule') {
@@ -510,7 +519,6 @@ function getMemberList() {
 		},
 		success: function(response) {
 			if (response.status === "success") {
-				console.log(response);
 				setMemberList(response);
 			} else {
 				alert(response.message);
@@ -617,6 +625,88 @@ function withdrawMember(userId) {
 				alert('탈퇴 처리에 실패했습니다.');
 			}
 		});
+	}
+}
+
+//게시판 리스트 가져오기
+function getBoardList(page) {
+
+	// 페이지 번호가 없거나 유효하지 않으면 0으로 설정
+	if (page == null || isNaN(page)) {
+		page = 0;
+	}
+
+	let num = $('#groupId').val();
+
+	$.ajax({
+		url: '/api/group/detail/board/lists',
+		type: 'GET',
+		data: {
+			page: page,
+			groupId: num
+		},
+		success: function(response) {
+			if (response.status === "success") {
+				setBoardList(response);
+				renderPagination(response.totalPages, response.number);
+			} else {
+				alert(response.message);
+			}
+		},
+		error: function() {
+			alert('공유 파일 조회에 실패하였습니다.');
+		}
+	});
+}
+
+function setBoardList(response) {
+
+	$("#boardList").empty();
+
+	let data = response.data;
+	console.log(data);
+
+	$.each(data, function(index, item) {
+		const listItem = `
+            <li class="list-group-item d-flex justify-content-between align-items-center board-item" data-id="${item.id}" data-group-id="${item.groupId}">
+                <span>${item.title}</span>
+                <small>${item.nickName}</small>
+            </li>`;
+		$("#boardList").append(listItem);
+	});
+
+
+	// 게시글 클릭 이벤트
+	$(".board-item").click(function() { // 중괄호 사용
+		const boardId = $(this).data("id"); // 게시글 ID 가져오기
+		const groupId = $(this).data("group-id"); // 그룹 ID 가져오기
+		window.location.href = `/mystudy/detail/board/${groupId}/${boardId}`; // 상세 페이지로 이동
+	});
+}
+
+// 페이징 버튼 생성
+function renderPagination(totalPages, currentPage) {
+	$(".paginationSection").empty(); // 기존 버튼 지움
+
+	// 이전 버튼
+	if (currentPage > 0) {
+		const prevButton = $(`<button class="btn btn-secondary me-2">이전</button>`);
+		prevButton.click(() => getBoardList(currentPage - 1));
+		$(".paginationSection").append(prevButton);
+	}
+
+	// 페이지 번호 버튼
+	for (let i = 0; i < totalPages; i++) {
+		const pageButton = $(`<button class="btn ${i === currentPage ? "btn-primary" : "btn-outline-primary"} me-2">${i + 1}</button>`);
+		pageButton.click(() => getBoardList(i));
+		$(".paginationSection").append(pageButton);
+	}
+
+	// 다음 버튼
+	if (currentPage < totalPages - 1) {
+		const nextButton = $(`<button class="btn btn-secondary">다음</button>`);
+		nextButton.click(() => getBoardList(currentPage + 1));
+		$(".paginationSection").append(nextButton);
 	}
 }
 

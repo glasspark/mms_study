@@ -80,11 +80,6 @@
 											data-target="board"> <i
 												class="bi bi-chat-left-text-fill me-2"></i>게시판
 										</a></li>
-										<!-- 				<li class="nav-item mb-2"><a
-											class="nav-link text-dark rounded-2" href="#"
-											data-target="application"> <i
-												class="bi bi-plus-circle me-2"></i> 가입신청
-										</a></li> -->
 										<!-- 가입신청 버튼은 LEADER 또는 SUB_LEADER일 경우 보임 -->
 										<li class="nav-item mb-2"
 											th:if="${userRole == 'LEADER' || userRole == 'SUB_LEADER'}">
@@ -188,7 +183,17 @@
 													<h3 class="fw-bold">게시판 내용</h3>
 													<button id="createPostBtn" class="btn btn-primary">작성하기</button>
 												</div>
-												<p>게시판에 대한 상세 정보가 나온다.</p>
+
+												<div id="boardListSection" class="mt-4">
+													<ul id="boardList" class="list-group">
+														<!-- 파일 리스트 아이템이 여기에 동적으로 추가됩니다 -->
+													</ul>
+												</div>
+												<div id="pagination"
+													class="mt-4 d-flex justify-content-center">
+													<!-- 페이징 버튼이 동적으로 추가됩니다 -->
+													<div class="paginationSection"></div>
+												</div>
 											</div>
 
 											<div id="application" class="content-section d-none">
@@ -197,7 +202,6 @@
 												<div id="applicationListContainer">
 													<p>가입신청에 대한 상세 정보가 나온다.</p>
 												</div>
-
 											</div>
 											<div id="delete" class="content-section d-none">
 												<h3 class="fw-bold">스터디 삭제 내용</h3>

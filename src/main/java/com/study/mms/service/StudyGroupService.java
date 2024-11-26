@@ -29,6 +29,7 @@ import com.study.mms.model.StudyGroupJoinRequest;
 import com.study.mms.model.StudyGroupMember;
 import com.study.mms.model.StudyReply;
 import com.study.mms.model.User;
+import com.study.mms.repository.StudyBoardRepository;
 import com.study.mms.repository.StudyCommentRepository;
 import com.study.mms.repository.StudyGroupJoinRequestRepository;
 import com.study.mms.repository.StudyGroupMemberRepository;
@@ -48,6 +49,7 @@ public class StudyGroupService {
 	private final StudyGroupJoinRequestRepository joinRequestRepository;
 	private final StudyCommentRepository studyCommentRepository;
 	private final StudyReplyRepository studyReplyRepository;
+	private final StudyBoardRepository studyBoardRepository;
 
 	// 스터디 그룹 생성
 	@Transactional
@@ -176,7 +178,7 @@ public class StudyGroupService {
 
 	// 스터디 그룹 가입 신청(유저가 스터디 그룹에 가입 신청을 함)
 	@Transactional
-	//@Transactional(rollbackOn = Exception.class)
+	// @Transactional(rollbackOn = Exception.class)
 	public Map<String, Object> RequestJoinStudyGroup(Authentication authentication, StudyJoinDTO studyJoinDTO) {
 		Map<String, Object> returnMap = new HashMap<>();
 
@@ -279,87 +281,6 @@ public class StudyGroupService {
 		}
 		return returnMap;
 	}
-
-	// 방장이 회원 가입 리스트 반환 studyGroupDetail 에서 사용
-//	@Transactional
-//	public Map<String, Object> getJoinRequestsForLeader(Authentication authentication, StudyJoinDTO studyJoinDTO) {
-//		Map<String, Object> returnMap = new HashMap<>();
-//
-//		try {
-//			// Authentication 객체에서 PrincipalDetail 객체를 가져옴
-//			PrincipalDetail principalDetail = (PrincipalDetail) authentication.getPrincipal();
-//
-//			// 인증된 사용자 정보 가져오기
-//			User user = principalDetail.getUser();
-//
-//			// 스터디 그룹 정보 가져오기
-//			StudyGroup studyGroup = studyGroupRepository.findById(studyJoinDTO.getStudyNum())
-//					.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
-//
-//			// 현재 사용자가 방장인지 확인(equals 두 객체가 같은지 비교)
-//			if (!studyGroup.getLeader().getId().equals(user.getId())) {
-//				throw new IllegalArgumentException("해당 스터디 그룹의 방장이 아닙니다.");
-//			}
-//
-//			// 가입 신청 리스트 가져오기
-//			List<StudyGroupJoinRequest> joinRequests = joinRequestRepository.findByStudyGroupAndStatus(studyGroup,
-//					StudyGroupJoinRequest.RequestStatus.PENDING);
-//			// DTO 리스트로 변환
-//			List<ReponseJoinDTO> joinRequestDTOs = joinRequests.stream().map(ReponseJoinDTO::new)
-//					.collect(Collectors.toList());
-//
-//			// 성공 응답 설정
-//			returnMap.put("status", "success");
-//			returnMap.put("joinRequests", joinRequestDTOs);
-//		} catch (IllegalArgumentException e) {
-//			returnMap.put("status", "error");
-//			returnMap.put("message", e.getMessage());
-//		} catch (Exception e) {
-//			returnMap.put("status", "error");
-//			returnMap.put("message", "가입 신청 리스트 조회 중 오류가 발생했습니다.");
-//		}
-//		return returnMap;
-//	}
-
-	// 방장 회원가입 승인 혹은 거절 처리
-	// 승인이 되면 승인완료 처리로 상태를 변경하며 해당 그룹에 속해지도록 처리 ( 거절이 없으며 유저 정보 찾는게 없음)
-//	@Transactional
-//	public Map<String, Object> approveJoinRequest(Authentication authentication, StudyJoinDTO studyJoinDTO) {
-//		Map<String, Object> returnMap = new HashMap<>();
-//
-//		// Authentication 객체에서 PrincipalDetail 객체를 가져옴
-//		PrincipalDetail principalDetail = (PrincipalDetail) authentication.getPrincipal();
-//
-//		// 인증된 사용자 정보 가져오기
-//		User user = principalDetail.getUser();
-//
-//		// 스터디 그룹 정보 가져오기
-//		StudyGroup studyGroup = studyGroupRepository.findById(studyJoinDTO.getStudyNum())
-//				.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
-//
-//		// 현재 사용자가 방장인지 확인(equals 두 객체가 같은지 비교)
-//		if (!studyGroup.getLeader().getId().equals(user.getId())) {
-//			throw new IllegalArgumentException("해당 스터디 그룹의 방장이 아닙니다.");
-//		}
-//
-//		// 가입 요청 조회
-//		StudyGroupJoinRequest joinRequest = joinRequestRepository.findById(studyJoinDTO.getRequestId())
-//				.orElseThrow(() -> new IllegalArgumentException("해당 가입 신청을 찾을 수 없습니다."));
-//
-//		// 스터디 그룹 회원 리스트에 추가
-//		StudyGroupMember newMember = StudyGroupMember.builder().studyGroup(studyGroup).user(joinRequest.getUser())
-//				.role(StudyGroupMember.StudyRole.MEMBER).build();
-//		studyGroupMemberRepository.save(newMember);
-//
-//		// 상태를 승인 상태로 변경
-//		joinRequest.setStatus(StudyGroupJoinRequest.RequestStatus.APPROVED);
-//		joinRequestRepository.save(joinRequest);
-//
-//		// 성공 응답 설정
-//		returnMap.put("status", "success");
-//		returnMap.put("message", "회원가입 신청이 승인되었습니다.");
-//		return returnMap;
-//	}
 
 	// 홈페이지 스터디 그룹 리스트 반환
 	@Transactional
@@ -771,6 +692,12 @@ public class StudyGroupService {
 		// TODO Auto-generated method stub
 		User user = principalDetail.getUser();
 		return studyGroupRepository.isUserMemberOfGroup(user.getId(), groupId) > 0;
+	}
+
+	// 스터디 그룹 게시판 자신이 작성한 글인지 확인
+	public boolean isUserAuthorOfBoardInGroup(PrincipalDetail principalDetail, Integer groupId, Integer boardId) {
+		User user = principalDetail.getUser();
+		return studyBoardRepository.findByIdAndUserIdAndStudyGroupId(boardId, user.getId(), groupId).isPresent();
 	}
 
 	// 스터디 그룹 권한 확인

@@ -62,6 +62,8 @@ public class StudyBoard {
 	@JoinColumn(name = "study_group_id")
 	private StudyGroup studyGroup; // 스터디 그룹과 매핑
 	
-	
+	@ManyToOne
+	@JoinColumn(name = "user_id")
+	private User user;
 	
 }

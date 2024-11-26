@@ -29,7 +29,23 @@
 <script
 	src="https://cdn.ckeditor.com/ckeditor5/39.0.0/classic/ckeditor.js"></script>
 <link href="/css/styles.css" rel="stylesheet" />
-<script src="/js/studyBoard.js"></script>
+<script src="/js/studyBoardDetail.js"></script>
+
+
+<style>
+.content-container img {
+	max-width: 100%; /* 이미지가 컨테이너를 벗어나지 않도록 설정 */
+	height: auto; /* 이미지 비율 유지 */
+	display: block; /* 인라인 요소를 차단하고 블록 요소로 처리 */
+	margin: 0 auto; /* 필요 시 중앙 정렬 */
+}
+
+.content-container {
+	overflow: hidden; /* 필요 시 컨테이너를 벗어나는 콘텐츠를 숨김 */
+}
+</style>
+
+
 </head>
 <body class="d-flex flex-column h-100 bg-light">
 	<main class="flex-shrink-0">
@@ -46,32 +62,43 @@
 						<div class="col-lg-12 col-xl-9 col-xxl-8">
 							<div class="card border-0 rounded-2 mb-2">
 								<div class="card-body">
-									<h5 class="card-title mb-4 fw-bold text-center">게시글 작성</h5>
-									<!-- 게시글 작성 Form -->
-									<form id="saveForm">
+									<h3 class="card-title mb-4 fw-bold text-start"
+										th:text="${boardDetail.title}">게시글 상세</h3>
+
+									<!-- 작성자, 작성일, 수정/삭제 버튼 -->
+									<div class="d-flex justify-content-between align-items-center">
 										<input type="hidden" id="groupId" th:value="${groupId}"
 											name="groupId"> <input type="hidden" id="boardId"
-											th:value="${boardId}" name="id">
-										<!-- 제목 입력 필드 -->
-										<div class="mb-3">
-											<label for="postTitle" class="form-label fw-bold">제목</label>
-											<input type="text" class="form-control" id="postTitle"
-												placeholder="게시글 제목을 입력하세요" required name="title" th:value="${boardDetail != null} ? ${boardDetail.title} : ''">
-										</div>
+											th:value="${boardId}" name="boardId">
 
-										<!-- 내용 입력 필드 -->
-										<div class="mb-4">
-											<label for="postContent" class="form-label fw-bold">내용</label>
-											<textarea id="ck-editor" class="form-control" th:text="${boardDetail != null} ? ${boardDetail.content} : ''"></textarea>
+										<!-- 작성자와 작성일 -->
+										<p class="text-muted mb-0">
+											<i class="bi bi-person me-1"></i> <span
+												th:text="${boardDetail.nickName}"></span> <i
+												class="bi bi-alarm me-2 ms-3"></i><span
+												th:text="${#temporals.format(boardDetail.createdAt, 'yyyy-MM-dd HH:mm')}">2023-12-01</span>
+										</p>
+										<!-- 수정/삭제 버튼 -->
+										<div th:if="${boardDetail.isAuthor}">
+											<a href="#" class="btn btn-primary me-2" id="modifyBtn">수정</a>
+											<a href="#" class="btn btn-danger" id="deleteBtn">삭제</a>
 										</div>
+									</div>
+									<hr>
 
-										<!-- 버튼 그룹 (등록, 취소) -->
-										<div class="d-flex justify-content-center gap-2">
-											<button type="button" class="btn btn-secondary"
-												id="cancelBtn">취소</button>
-											<button class="btn btn-primary" id="submitBtn">등록</button>
+									<!-- 게시글 내용 -->
+									<div class="mb-4">
+										<div class="content-container">
+											<div th:utext="${boardDetail.content}"></div>
 										</div>
-									</form>
+									</div>
+
+									<!-- 목록으로 돌아가기 버튼 -->
+									<div class="mt-4 d-flex justify-content-center">
+										<a
+											th:href="@{/mystudy/detail/{groupId}(groupId=${boardDetail.groupId})}"
+											class="btn btn-secondary">목록으로 돌아가기</a>
+									</div>
 								</div>
 							</div>
 						</div>

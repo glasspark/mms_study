@@ -9,6 +9,7 @@ import javax.servlet.http.HttpServletResponse;
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -142,7 +143,7 @@ public class StudyGroupDetailController {
 		JSONObject outData = new JSONObject();
 		// 이미지를 업로드하고 경로 반환
 		String uploadedFilePath = ImageUploader.uploadImage(multi, req, "/upload/temp/");
-		
+
 		outData.put("uploaded", true);
 		outData.put("url", uploadedFilePath);
 		res.setContentType("application/json");
@@ -153,8 +154,25 @@ public class StudyGroupDetailController {
 	@ResponseBody
 	@PostMapping("/save/write")
 	@Operation(summary = "스터디 그룹 게시판 글 저장 및 수정 API", description = "스터디그룹 상세페이지에서 게시판 작성 글 저장 및 수정 API")
-	public Map<String, Object> saveStudyBoard(@ModelAttribute StudyBoardDTO board, HttpServletRequest req) {
-		return studyGroupDetailService.saveStudyBoard(board, req);
+	public Map<String, Object> saveStudyBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@ModelAttribute StudyBoardDTO board, HttpServletRequest req) {
+		return studyGroupDetailService.saveStudyBoard(principalDetail, board, req);
+	}
+
+	@ResponseBody
+	@GetMapping("/board/lists")
+	@Operation(summary = "스터디 그룹 게시판 글 리스트 반환 API", description = "스터디그룹 상세페이지에서 게시판 작성 글 리스트 반환 API")
+	public Map<String, Object> getStudyBoardLists(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@RequestParam(defaultValue = "0") Integer page, Integer groupId) {
+		return studyGroupDetailService.getStudyBoardLists(principalDetail, page, groupId);
+	}
+
+	@ResponseBody
+	@DeleteMapping("/board")
+	@Operation(summary = "스터디 그룹 게시판 글 저장 및 수정 API", description = "스터디그룹 상세페이지에서 게시판 작성 글 저장 및 수정 API")
+	public Map<String, Object> deleteStudyBoardDetail(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@RequestParam Integer groupId, @RequestParam Integer boardId, HttpServletRequest req) {
+		return studyGroupDetailService.deleteStudyBoardDetail(principalDetail, groupId, boardId, req);
 	}
 
 }

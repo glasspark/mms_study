@@ -116,5 +116,8 @@ public class User {
 	//아래의 것은 고래해 볼 것(회원 탈퇴하면 전체 사라지는것인지)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<StudyGroupMember> studyGroupMemberships;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<StudyBoard> studyBoards;
 
 }
