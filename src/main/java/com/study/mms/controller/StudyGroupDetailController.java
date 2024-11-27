@@ -174,5 +174,13 @@ public class StudyGroupDetailController {
 			@RequestParam Integer groupId, @RequestParam Integer boardId, HttpServletRequest req) {
 		return studyGroupDetailService.deleteStudyBoardDetail(principalDetail, groupId, boardId, req);
 	}
+	
+	@ResponseBody
+	@DeleteMapping("/study")
+	@Operation(summary = "스터디 그룹 삭제 API", description = "스터디그룹 상세페이지에서 방장이 스터디 그룹을 삭제하는 API")
+	public Map<String, Object> deleteStudDetail(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@RequestParam Integer groupId, HttpServletRequest req) {
+		return studyGroupDetailService.deleteStudDetail(principalDetail, groupId, req);
+	}
 
 }

@@ -1,26 +1,6 @@
 $(document).ready(function() {
 
 
-	//기본적으로 보여질 화면 지정
-	showContent('infoContent');
-	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
-	$('#showInfo').on('click', function() {
-		console.log("클릭");
-		showContent('infoContent');
-	});
-
-	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
-	$('#defaultInfo').on('click', function() {
-		showContent('infoContent');
-	});
-	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
-	$('#showInquiry').on('click', function() {
-		showContent('infoInquiryContent');
-	});
-
-	// === 위에것은 따로 common.js 로 빼던가 할 것
-
-
 	// 닉네임 변경 감지(닉네임만 변경하는 경우 처리)
 	$('#nickname').on('input', function() {
 		$('#saveBtn').prop('disabled', false).attr('data-type', 'nickname');

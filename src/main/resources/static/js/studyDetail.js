@@ -85,7 +85,7 @@ $(document).ready(function() {
 		});
 	});
 
-
+	// 모집완료 버튼 누름
 	$("#registerButton").click(function() {
 
 		// 댓글 입력 필드 값 가져오기

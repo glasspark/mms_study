@@ -51,6 +51,9 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Integer>
 			+ "WHERE sgm.study_group_id = :groupId AND sgm.user_id = :userId", nativeQuery = true)
 	int isUserMemberOfGroup(@Param("userId") Integer userId, @Param("groupId") Integer groupId);
 
-	
-	
+	// 스터디 그룹 방장인지 확인
+	@Query("SELECT CASE WHEN COUNT(sg) > 0 THEN true ELSE false END " + "FROM StudyGroup sg "
+			+ "WHERE sg.id = :groupId AND sg.leader.id = :userId")
+	boolean isUserLeader(@Param("groupId") Integer groupId, @Param("userId") Integer userId);
+
 }

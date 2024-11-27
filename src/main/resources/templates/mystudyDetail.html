@@ -36,6 +36,8 @@
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Chart.js CDN -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Core theme JS-->
 <script src="/js/mystudyDetail.js"></script>
 </head>
@@ -109,10 +111,63 @@
 									<div class="card border-0 rounded-4">
 										<div class="card-body" id="content">
 											<!-- Default content -->
-											<div id="study" class="content-section d-none">
-												<h3 class="fw-bold">스터디 이름 입니다.</h3>
+
+											<!-- 				<div id="study" class="content-section d-none">
+												<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
 												<hr>
+
+												<div>
+													<div>
+														방장<i class="fas fa-crown text-warning"></i>
+														<p th:text="${studyGroup.leader}"></p>
+														부방장이 있을 때만 표시
+														<div th:if="${studyGroup.subLeader != null}">
+															부방장 <i class="fas fa-star text-primary"></i>
+															<p th:text="${studyGroup.subLeader}"></p>
+														</div>
+													</div>
+												</div>
+												
+												<div>멤버 수 <p th:text="${studyGroup.memberCount}"></p></div>
+												<div>최대 멤버 수 <p th:text="${studyGroup.maxMembers}"></p></div>
+
+											</div> -->
+											<div id="study" class="content-section d-none">
+												<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
+												<hr>
+
+												<!-- 방장과 부방장 정보를 같은 행에 나란히 배치 -->
+												<div class="row mb-3">
+													<div class="col">
+														<span>방장 <i class="fas fa-crown text-warning"></i>
+															<span th:text="${studyGroup.leader}"></span></span>
+													</div>
+													<div class="col" th:if="${studyGroup.subLeader != null}">
+														<span>부방장 <i class="fas fa-star text-primary"></i>
+															<span th:text="${studyGroup.subLeader}"></span></span>
+													</div>
+												</div>
+
+												<!-- 멤버 수와 최대 멤버 수 정보를 같은 행에 나란히 배치 -->
+												<div class="row ">
+													<!-- 				<canvas id="memberChart" width="400" height="100"></canvas>
+													<input type="hidden" id="memberCount"
+														th:value="${studyGroup.memberCount}"> <input
+														type="hidden" id="maxMembers"
+														th:value="${studyGroup.maxMembers}"> -->
+
+													<div class="col">
+														<span>멤버 수: <span
+															th:text="${studyGroup.memberCount}"></span></span>
+													</div>
+													<div class="col">
+														<span>최대 멤버 수: <span
+															th:text="${studyGroup.maxMembers}"></span></span>
+													</div>
+												</div>
 											</div>
+
+
 											<div id="members" class="content-section d-none">
 												<h3 class="fw-bold">활동 멤버</h3>
 												<!-- 공유 파일 리스트 섹션 -->
@@ -203,9 +258,19 @@
 													<p>가입신청에 대한 상세 정보가 나온다.</p>
 												</div>
 											</div>
-											<div id="delete" class="content-section d-none">
-												<h3 class="fw-bold">스터디 삭제 내용</h3>
-												<p>스터디 삭제에 대한 상세 정보가 나온다.</p>
+											<div id="delete" class="content-section d-none ">
+												<h3 class="fw-bold">스터디 삭제</h3>
+												<hr>
+												<div class="text-center">
+												<div style="color: #ffc107;">
+													<i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
+												</div>
+												<p>
+													스터디 그룹을 삭제하면 기존의 데이터들이 다 삭제 됩니다.<br>스터디 그룹을 삭제하기를
+													원하시면 아래의 버튼을 눌러주세요.
+												</p>
+												<button id="deleteStudyBtn" class="btn btn-danger">삭제하기</button>
+												</div>
 											</div>
 										</div>
 									</div>
@@ -237,7 +302,53 @@
 		</div>
 	</footer>
 </body>
+<!-- <script>
+	$(document).ready(function() {
+		// Thymeleaf 변수에서 값을 가져옵니다.
+		const memberCount = $('#memberCount').val();
+		const maxMembers = $('#maxMembers').val();
 
+		console.log(memberCount);
+
+		// 최대 멤버 수에서 현재 멤버 수를 뺀 값을 계산합니다.
+		const remainingMembers = maxMembers - memberCount;
+
+		// 파이 차트를 생성합니다.
+		const ctx = $('#memberChart')[0].getContext('2d');
+		new Chart(ctx, {
+			type : 'pie',
+			data : {
+				labels : [ '현재 멤버 수', '남은 자리 수' ],
+				datasets : [ {
+					data : [ memberCount, remainingMembers ],
+					backgroundColor : [ '#36A2EB', '#FFCE56' ],
+					borderColor : [ '#FFFFFF' ],
+					borderWidth : 1,
+				} ]
+			},
+			options : {
+				responsive : true,
+				plugins : {
+					legend : {
+						position : 'bottom',
+					},
+					tooltip : {
+						callbacks : {
+							label : function(context) {
+								let label = context.label || '';
+								if (label) {
+									label += ': ';
+								}
+								label += context.raw;
+								return label;
+							}
+						}
+					}
+				}
+			}
+		});
+	});
+</script> -->
 </html>
 
 

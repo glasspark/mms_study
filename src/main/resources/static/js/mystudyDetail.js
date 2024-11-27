@@ -69,6 +69,26 @@ $(document).ready(function() {
 
 	});
 
+	//스터디 그룹 삭제 
+	$('#deleteStudyBtn').click(function() {
+		let num = $('#groupId').val();
+		$.ajax({
+		 url: '/api/group/detail/study?groupId=' + num, 
+			type: 'DELETE',
+			success: function(response) {
+				if (response.status === 'success') {
+					alert(response.message);
+				  window.location.href = '/mystudy'; 
+				} else {
+					alert(response.message);
+				}
+			},
+			error: function() {
+				alert('오류가 발생했습니다. 다시 시도해주세요.');
+			}
+		});
+	});
+
 	//공유 파일 업로드 버튼 클릭 시 파일 업로드 처리
 	$('#uploadButton').click(function() {
 		let formData = new FormData();
@@ -664,7 +684,6 @@ function setBoardList(response) {
 	$("#boardList").empty();
 
 	let data = response.data;
-	console.log(data);
 
 	$.each(data, function(index, item) {
 		const listItem = `

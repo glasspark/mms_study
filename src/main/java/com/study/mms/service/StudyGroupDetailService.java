@@ -755,9 +755,72 @@ public class StudyGroupDetailService {
 				}
 			}
 			studyBoardRepository.delete(getBoard);
-			
+
 			returnMap.put("status", "success");
 			returnMap.put("message", "삭제되었습니다.");
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생했습니다.");
+			e.printStackTrace();
+		}
+
+		return returnMap;
+	}
+
+//스터디 그룹 삭제
+	@Transactional
+	public Map<String, Object> deleteStudDetail(PrincipalDetail principalDetail, Integer groupId,
+			HttpServletRequest req) {
+		// TODO Auto-generated method stub
+		Map<String, Object> returnMap = new HashMap<>();
+
+		try {
+			// 스터디 존재 여부 확인
+			StudyGroup studyGroup = studyGroupRepository.findById(groupId)
+					.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
+
+			// 방장인지 아닌지 확인
+			User user = principalDetail.getUser();
+
+			boolean checkLeader = studyGroupRepository.isUserLeader(groupId, user.getId());
+
+			if (!checkLeader) {
+				returnMap.put("status", "error");
+				returnMap.put("message", "권한이 없습니다.");
+			}
+
+			// 이미지 , 공유 파일 삭제 필요
+
+			// 1. 해당하는 스터디의 모든 게시판 id 를 가져와서 for 문 돌려서 삭제
+
+			List<StudyBoard> boards = studyBoardRepository.findByStudyGroupId(groupId);
+
+			if (!boards.isEmpty()) {
+				for (StudyBoard board : boards) {
+					// 게시물의 이미지 목록 가져오기
+					String imgString = board.getImg();
+					if (imgString != null && !imgString.isEmpty()) {
+						String[] imgList = imgString.split(",");
+						for (String img : imgList) {
+							ImageUploader.deleteImage(req, "/upload/studyBoard/" + img);
+						}
+					}
+				}
+			}
+
+			// 2. 공유 파일도 마찬가지로 삭제
+			List<UploadedFile> files = uploadedFileRepository.findByStudyGroup(studyGroup);
+
+			if (!files.isEmpty()) {
+				for (UploadedFile file : files) {
+					ImageUploader.deleteImage(req, file.getFilePath());
+				}
+			}
+
+			studyGroupRepository.delete(studyGroup);
+			returnMap.put("status", "success");
+			returnMap.put("message", "삭제되었습니다.");
+
 		} catch (Exception e) {
 			returnMap.put("status", "error");
 			returnMap.put("message", "오류가 발생했습니다.");

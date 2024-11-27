@@ -1,5 +1,6 @@
 package com.study.mms.repository;
 
+import java.util.List;
 import java.util.Optional;
 
 import org.springframework.data.domain.Page;
@@ -17,5 +18,7 @@ public interface StudyBoardRepository extends JpaRepository<StudyBoard, Integer>
 
 	// 게시글 ID, 사용자 ID, 그룹 ID를 통해 사용자가 해당 그룹의 게시글 작성자인지 확인하는 메서드
 	Optional<StudyBoard> findByIdAndUserIdAndStudyGroupId(Integer boardId, Integer userId, Integer groupId);
+
+	List<StudyBoard> findByStudyGroupId(Integer groupId);
 
 }

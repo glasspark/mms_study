@@ -74,8 +74,15 @@ public class SecurityConfig {
 						}).logoutSuccessHandler(customLogoutSuccessHandler).permitAll())
 				.rememberMe().key("uniqueAndSecretKey").rememberMeParameter("remember-me")
 				.tokenRepository(tokenRepository()).tokenValiditySeconds(15552000) // 쿠키 시간 반년으로 설정
-				.userDetailsService(principalDetailService).and().exceptionHandling(
-						exceptionHandling -> exceptionHandling.accessDeniedHandler(new LoginDeniedHandler())); // 요청 실패시
+				.userDetailsService(principalDetailService).and()
+				.exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new LoginDeniedHandler())
+						.authenticationEntryPoint((request, response, authException) -> {
+							response.sendRedirect("/?sessionExpired=true"); // 세션 만료 시 로그인 페이지로 리다이렉트
+						}))
+				   .sessionManagement(sessionManagement -> sessionManagement
+				            .invalidSessionUrl("/?sessionExpired=true") // 세션이 만료되었을 때 로그인 페이지로 리다이렉트
+				        );
+
 		return http.build();
 	}
 

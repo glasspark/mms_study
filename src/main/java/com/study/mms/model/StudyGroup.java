@@ -118,6 +118,10 @@ public class StudyGroup {
 
 	// 스터디 그룹 댓글 관련
 	@OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<StudyGroupJoinRequest> studyGroupJoinRequests;
+	
+	// 스터디 그룹 댓글 관련
+	@OneToMany(mappedBy = "studyGroup", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<StudyComment> comments;
 
 	// 스터디 그룹 일정

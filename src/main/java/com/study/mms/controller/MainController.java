@@ -94,9 +94,7 @@ public class MainController {
 	public String mystudy(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
 
 		List<StudyGroupDTO> getUserGroup = studyGroupService.getUserStudyGroup(principalDetai);
-
 		model.addAttribute("data", getUserGroup);
-
 		return "mystudy";
 	}
 
@@ -109,9 +107,9 @@ public class MainController {
 		String userRole = studyGroupService.isUserMemberOfRole(principalDetail, groupId);
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("userRole", userRole);
-		
-		
-		
+		//스터디 그룹에 대한 정보를 반환
+		StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(groupId);
+		model.addAttribute("studyGroup", studyGroup);
 		return "mystudyDetail";
 	}
 
