@@ -121,7 +121,6 @@ $(document).ready(function() {
 	$('#changePasswordBtn').on('click', function(event) {
 		event.preventDefault();
 		let form = $('#pwForm')[0]; // 폼 요소 가져오기
-		let formData = new FormData(form); // FormData 객체 생성
 
 		// 비밀번호 변경
 		$.ajax({
@@ -129,7 +128,10 @@ $(document).ready(function() {
 			type: 'PATCH', // PATCH 요청
 			data: $(form).serialize(),
 			success: function(response) {
-				console.log(response);
+				if (response.status === "success") {
+					alert(response.message);
+				}
+				alert(response.message);
 			},
 			error: function(error) {
 				console.log('닉네임 변경 중 오류가 발생했습니다.', error);
@@ -138,6 +140,23 @@ $(document).ready(function() {
 		});
 
 	});
+
+
+
+	// ===== 스터디 ======
+
+	// 내 스터디 목록
+	$('#showStudy, #myLists').on('click', function() {
+		getStudyLists();
+	});
+
+	// 신청한 스터디 
+	$('#showApplied').on('click', function() {
+	 getAppliedLists()
+	});
+
+
+
 
 
 	// ===== 1:1 문의 관련 API =====
@@ -278,5 +297,36 @@ function createPagination(totalPages, currentPage) {
 }
 
 
+//가입한 스터디 목록 
+function getStudyLists() {
+
+	$.ajax({
+		type: 'GET',
+		url: '/api/user/study/lists',
+		success: function(response) {
+			console.log(response);
+		},
+		error: function(xhr, status, error) {
+			console.error("데이터 로드 중 오류 발생:", error);
+		}
+	});
 
 
+}
+
+
+
+function getAppliedLists() {
+
+	$.ajax({
+		type: 'GET',
+		url: '/api/user/applied/study',
+		success: function(response) {
+			console.log(response);
+		},
+		error: function(xhr, status, error) {
+			console.error("데이터 로드 중 오류 발생:", error);
+		}
+	});
+
+}

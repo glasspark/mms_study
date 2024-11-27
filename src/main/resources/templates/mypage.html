@@ -65,15 +65,15 @@
 									<a href="#studyCollapse"
 										class="list-group-item list-group-item-action"
 										data-bs-toggle="collapse" role="button" aria-ex panded="false"
-										aria-controls="studyCollapse" id="showStudy"> <i
+										aria-controls="studyCollapse"> <i
 										class="bi bi-journal-check"></i> &nbsp; 스터디
 									</a>
 									<div class="collapse" id="studyCollapse">
 										<a href="#"
-											class="list-group-item list-group-item-action ps-4">내 스터디
-											목록</a> <a href="#"
-											class="list-group-item list-group-item-action ps-4">신청한
-											스터디</a>
+											class="list-group-item list-group-item-action ps-4"
+											id="showStudy">내 스터디 목록</a> <a href="#"
+											class="list-group-item list-group-item-action ps-4"
+											id="showApplied">신청한 스터디</a>
 									</div>
 
 									<!-- 문의사항 항목 -->
@@ -163,8 +163,8 @@
 											<!-- 새로운 비밀번호 입력 -->
 											<div class="w-100 mb-3">
 												<label for="newPassword" class="form-label">새로운 비밀번호</label>
-												<input type="password" class="form-control"
-													id="newPassword" name="newPassword" placeholder="새로운 비밀번호"
+												<input type="password" class="form-control" id="newPassword"
+													name="newPassword" placeholder="새로운 비밀번호"
 													autocomplete="off" required>
 											</div>
 
@@ -177,12 +177,28 @@
 											</div>
 
 											<!-- 비밀번호 변경 버튼 -->
-											<button type="button" class="btn btn-primary mt-4"
+											<button type="submit" class="btn btn-primary mt-4"
 												id="changePasswordBtn">비밀번호 변경</button>
 										</form>
 									</div>
 								</div>
 
+								<!-- 스터디 - 내 스터디 목록 -->
+								<div class="card-body p-5 infoContent content-section "
+									style="display: none;" id="myStudyListsContent">
+									<div class="d-flex flex-column align-items-center text-center ">
+										내 스터디 목록</div>
+										
+										
+								</div>
+
+								<!-- 스터디 - 신청한 스터디 -->
+								<div class="card-body p-5 infoContent content-section "
+									style="display: none;" id="appliedStudyListsContent">
+									<div class="d-flex flex-column align-items-center text-center ">
+
+										신청한 스터디 목록</div>
+								</div>
 
 
 

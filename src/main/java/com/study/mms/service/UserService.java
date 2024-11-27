@@ -26,6 +26,7 @@ import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.dto.InquiryDTO;
 import com.study.mms.dto.TodoDTO;
 import com.study.mms.dto.UsersJoinDTO;
+import com.study.mms.dto.joinRequestDTO;
 import com.study.mms.dto.updatePasswordDTO;
 import com.study.mms.model.Attendance;
 import com.study.mms.model.Inquiry;
@@ -590,6 +591,15 @@ public class UserService {
 
 		Map<String, Object> returnMap = new HashMap<>();
 		try {
+			// 1. 입력값 검증
+			if (passwordDTO.getPassword() == null || passwordDTO.getPassword().isEmpty()
+					|| passwordDTO.getNewPassword() == null || passwordDTO.getNewPassword().isEmpty()
+					|| passwordDTO.getPasswordCheck() == null || passwordDTO.getPasswordCheck().isEmpty()) {
+
+				returnMap.put("status", "fail");
+				returnMap.put("message", "모든 비밀번호 필드를 입력해야 합니다.");
+				return returnMap;
+			}
 
 			// 사용자 유효성 검사
 			Map<String, Object> userValidationResult = validateUser(principalDetai);
@@ -629,8 +639,8 @@ public class UserService {
 				return returnMap;
 			}
 
-			//password = "1234";
-			
+			// password = "1234";
+
 			// 비밀번호 암호화 및 사용자 정보 저장
 			String salt = BCrypt.gensalt();
 			String encPassword = BCrypt.hashpw(password, salt);
@@ -664,8 +674,12 @@ public class UserService {
 
 		List<StudyGroupJoinRequest> studyGroupJoinRequests = studyGroupJoinRequestRepository.findByUser(user);
 
+		// StudyGroupJoinRequest 엔티티를 joinRequestDTO로 빌더를 통해 매핑
+		List<joinRequestDTO> dtoList = studyGroupJoinRequests.stream().map(joinRequestDTO::fromEntity)
+				.collect(Collectors.toList());
+
 		returnMap.put("status", "success");
-		returnMap.put("data", studyGroupJoinRequests);
+		returnMap.put("data", dtoList);
 		returnMap.put("message", "리스트가 조회되었습니다. ");
 
 		return returnMap;

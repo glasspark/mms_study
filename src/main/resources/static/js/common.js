@@ -21,6 +21,17 @@ $(document).ready(function() {
 		showContent('passwordContent');
 	});
 
+	// 스터디 - 내 스터디 목록
+	$('#showStudy, #myLists').on('click', function() {
+		showContent('myStudyListsContent');
+	});
+
+	// 스터디 - 신청한 스터디 
+	$('#showApplied').on('click', function() {
+		showContent('appliedStudyListsContent');
+	});
+
+
 
 	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
 	$('#showInquiry').on('click', function() {
@@ -28,6 +39,8 @@ $(document).ready(function() {
 	});
 
 });
+
+
 
 
 // 콘텐츠 표시 함수

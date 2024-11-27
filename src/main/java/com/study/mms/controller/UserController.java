@@ -1,9 +1,10 @@
 package com.study.mms.controller;
 
+import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
-import javax.validation.Valid;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -20,9 +21,11 @@ import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.mms.auth.PrincipalDetail;
+import com.study.mms.dto.StudyGroupDTO;
 import com.study.mms.dto.UsersJoinDTO;
 import com.study.mms.dto.updatePasswordDTO;
 import com.study.mms.service.SendEmail;
+import com.study.mms.service.StudyGroupService;
 import com.study.mms.service.UserService;
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -36,6 +39,7 @@ public class UserController {
 
 	private final UserService userService;
 	private final SendEmail sendEmail;
+	private final StudyGroupService studyGroupService;
 
 	@ResponseBody
 	@PostMapping("/join")
@@ -94,27 +98,29 @@ public class UserController {
 //	}
 
 	@ResponseBody
-	@PostMapping("/get/signup/study")
+	@GetMapping("/applied/study")
 	@Operation(summary = "마이페이지 스터디 그룹 신청 리스트 API", description = "마이페이지에서 내가 신청한 스터디 그룹의 리스트 반환 API")
 	public Map<String, Object> getSignUpStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetai) {
 		return userService.getSignUpStudyLists(principalDetai);
 	}
 
 	@ResponseBody
-	@PostMapping("/get/join/study")
+	@GetMapping("/study/lists")
 	@Operation(summary = "마이페이지 가입한 스터디 그룹 리스트 API", description = "마이페이지에서 내가 가입한 스터디 그룹의 리스트 반환 API")
 	public Map<String, Object> getJoinStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return userService.getJoinStudyLists(principalDetai);
+		Map<String, Object> returnMap = new HashMap<>();
+		List<StudyGroupDTO> listDto = studyGroupService.getUserStudyGroup(principalDetai);
+		returnMap.put("data", listDto);
+		return returnMap;
 	}
-	
+
 	@ResponseBody
 	@PatchMapping("/info")
 	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경 API")
-	public Map<String, Object> passwordChange(@AuthenticationPrincipal PrincipalDetail principalDetai, 
-			 @ModelAttribute updatePasswordDTO passwordDTO, BindingResult bindingResult) {
+	public Map<String, Object> passwordChange(@AuthenticationPrincipal PrincipalDetail principalDetai,
+			@ModelAttribute updatePasswordDTO passwordDTO, BindingResult bindingResult) {
 		return userService.changeUserPassword(passwordDTO, principalDetai);
 	}
-	
 
 	// ================ 오늘의 할 일 ================
 
@@ -163,11 +169,12 @@ public class UserController {
 	public Map<String, Object> getUserInquiries(@AuthenticationPrincipal PrincipalDetail principalDetail, int page) {
 		return userService.getUserInquiries(principalDetail, page);
 	}
-	
+
 	@ResponseBody
 	@PostMapping("/delete/inquiry")
 	@Operation(summary = "1:1 문의 리스트 반환 API", description = "유저의 1: 1 문의 리스트를 반환 API")
-	public Map<String, Object> deleteUserInquiry(@AuthenticationPrincipal PrincipalDetail principalDetail, Integer inquiryId) {
+	public Map<String, Object> deleteUserInquiry(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			Integer inquiryId) {
 		return userService.deleteUserInquiry(principalDetail, inquiryId);
 	}
 
