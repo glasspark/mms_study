@@ -16,8 +16,7 @@ import com.study.mms.service.UserService;
 @RestController
 public class LoginFailureHandler implements AuthenticationFailureHandler {
 
-	@Autowired
-	private UserService userService;
+	//순환 참조로 레퍼지터리 참조해서 사용할 것(유저 서비스 이용 X)
 
 	@Override
 	public void onAuthenticationFailure(HttpServletRequest request, HttpServletResponse response,

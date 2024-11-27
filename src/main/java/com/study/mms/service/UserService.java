@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -25,6 +26,7 @@ import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.dto.InquiryDTO;
 import com.study.mms.dto.TodoDTO;
 import com.study.mms.dto.UsersJoinDTO;
+import com.study.mms.dto.updatePasswordDTO;
 import com.study.mms.model.Attendance;
 import com.study.mms.model.Inquiry;
 import com.study.mms.model.StudyGroupJoinRequest;
@@ -51,6 +53,8 @@ public class UserService {
 	private final StudyGroupJoinRequestRepository studyGroupJoinRequestRepository;
 	private final StudyGroupMemberRepository studyGroupMemberRepository;
 	private final InquiryRepository inquiryRepository;
+
+	private final BCryptPasswordEncoder passwordEncoder;
 
 	// ================= < 회원가입 > =================
 
@@ -582,7 +586,7 @@ public class UserService {
 
 	// 비밀번호 변경
 	@Transactional
-	public Map<String, Object> changeUserPassword(UsersJoinDTO joinDTO, PrincipalDetail principalDetai) {
+	public Map<String, Object> changeUserPassword(updatePasswordDTO passwordDTO, PrincipalDetail principalDetai) {
 
 		Map<String, Object> returnMap = new HashMap<>();
 		try {
@@ -595,15 +599,29 @@ public class UserService {
 
 			User user = (User) userValidationResult.get("user");
 
+			// 기존 비밀번호 검증
+			if (!passwordEncoder.matches(passwordDTO.getPassword(), user.getPassword())) {
+				returnMap.put("status", "fail");
+				returnMap.put("message", "기존 비밀번호가 일치하지 않습니다.");
+				return returnMap;
+			}
+
 			// 비밀번호 일치 확인
-			if (!joinDTO.getPassword1().equals(joinDTO.getPassword2())) {
+			if (!passwordDTO.getNewPassword().equals(passwordDTO.getPasswordCheck())) {
 				returnMap.put("status", "fail");
 				returnMap.put("message", "비밀번호가 틀렸습니다.");
 				return returnMap;
 			}
 
+			// 기존 비밀번호와 변경하는 비밀번호가 일치하는지 확인
+			if (passwordEncoder.matches(passwordDTO.getNewPassword(), user.getPassword())) {
+				returnMap.put("status", "fail");
+				returnMap.put("message", "기존 비밀번호와 동일한 비밀번호로 변경할 수 없습니다.");
+				return returnMap;
+			}
+
 			// 비밀번호 유효성 검사
-			String password = joinDTO.getPassword1();
+			String password = passwordDTO.getNewPassword();
 			String passwordValidationMessage = validatePassword(password);
 			if (passwordValidationMessage != null) {
 				returnMap.put("status", "fail");
@@ -611,6 +629,8 @@ public class UserService {
 				return returnMap;
 			}
 
+			//password = "1234";
+			
 			// 비밀번호 암호화 및 사용자 정보 저장
 			String salt = BCrypt.gensalt();
 			String encPassword = BCrypt.hashpw(password, salt);
@@ -620,7 +640,7 @@ public class UserService {
 			usersRepository.save(user);
 
 			returnMap.put("status", "success");
-			returnMap.put("message", "회원가입이 완료되었습니다.");
+			returnMap.put("message", "비밀번호가 변경 되었습니다.");
 
 		} catch (Exception e) {
 			returnMap.put("status", "error");

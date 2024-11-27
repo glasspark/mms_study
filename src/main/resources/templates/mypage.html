@@ -57,7 +57,7 @@
 											변경</a>
 									</div>
 									<div class="collapse" id="infoCollapse">
-										<a href="#"
+										<a href="#" id="showPassword"
 											class="list-group-item list-group-item-action ps-4">비밀번호
 											변경</a>
 									</div>
@@ -136,18 +136,55 @@
 														id="emailHelp" class="form-text text-muted">We'll
 														never share your email with anyone else.</small> -->
 												</div>
-												<div>
-													<label for="exampleInputPassword1" class="form-label mt-4">Password</label>
-													<input type="password" class="form-control"
-														id="exampleInputPassword1" placeholder="Password"
-														autocomplete="off">
-												</div>
+
 												<button type="submit" class="btn btn-primary mt-5 " disabled
 													id="saveBtn">저장</button>
 											</fieldset>
 										</div>
 									</div>
 								</div>
+
+
+								<!-- 비밀번호 변경-->
+								<div class="card-body p-5 passwordContent content-section "
+									style="display: none;" id="passwordContent">
+									<div class="d-flex flex-column align-items-center text-center">
+										<h3 class="mb-4">비밀번호 변경</h3>
+
+										<!-- 기존 비밀번호 입력 -->
+										<form id="pwForm">
+											<div class="w-100 mb-3">
+												<label for="password" class="form-label">기존 비밀번호</label> <input
+													type="password" class="form-control" id="password"
+													name="password" placeholder="기존 비밀번호" autocomplete="off"
+													required>
+											</div>
+
+											<!-- 새로운 비밀번호 입력 -->
+											<div class="w-100 mb-3">
+												<label for="newPassword" class="form-label">새로운 비밀번호</label>
+												<input type="password" class="form-control"
+													id="newPassword" name="newPassword" placeholder="새로운 비밀번호"
+													autocomplete="off" required>
+											</div>
+
+											<!-- 신규 비밀번호 확인 입력 -->
+											<div class="w-100 mb-3">
+												<label for="passwordCheck" class="form-label">신규
+													비밀번호 확인</label> <input type="password" class="form-control"
+													id="passwordCheck" name="passwordCheck"
+													placeholder="비밀번호 확인" autocomplete="off" required>
+											</div>
+
+											<!-- 비밀번호 변경 버튼 -->
+											<button type="button" class="btn btn-primary mt-4"
+												id="changePasswordBtn">비밀번호 변경</button>
+										</form>
+									</div>
+								</div>
+
+
+
 
 								<!-- 문의사항-->
 								<div class="card-body p-5 infoContent content-section "

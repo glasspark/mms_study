@@ -25,6 +25,7 @@ import com.study.mms.handler.LoginFailureHandler;
 @Configuration
 @EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
+	
 
 	@Autowired
 	private DataSource dataSource;
@@ -45,7 +46,7 @@ public class SecurityConfig {
 	public BCryptPasswordEncoder encodePWD() {
 		return new BCryptPasswordEncoder();
 	}
-
+	
 	@Bean
 	public PersistentTokenRepository tokenRepository() {
 		JdbcTokenRepositoryImpl jdbcTokenRepository = new JdbcTokenRepositoryImpl();

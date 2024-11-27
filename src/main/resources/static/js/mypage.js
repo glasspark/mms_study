@@ -115,7 +115,32 @@ $(document).ready(function() {
 		}
 	});
 
-	// ==== 1:1 문의 관련 API =====
+
+	// ===== 내 정보 - 비밀번호 변경 =====
+	// 사용자 지정 이미지 업로드
+	$('#changePasswordBtn').on('click', function(event) {
+		event.preventDefault();
+		let form = $('#pwForm')[0]; // 폼 요소 가져오기
+		let formData = new FormData(form); // FormData 객체 생성
+
+		// 비밀번호 변경
+		$.ajax({
+			url: '/api/user/info',
+			type: 'PATCH', // PATCH 요청
+			data: $(form).serialize(),
+			success: function(response) {
+				console.log(response);
+			},
+			error: function(error) {
+				console.log('닉네임 변경 중 오류가 발생했습니다.', error);
+				alert('닉네임 저장에 실패했습니다. 다시 시도해주세요.');
+			}
+		});
+
+	});
+
+
+	// ===== 1:1 문의 관련 API =====
 
 	// 페이지 로드 시 기본 데이터 로드
 	loadInquiries(1);
@@ -250,15 +275,6 @@ function createPagination(totalPages, currentPage) {
 	// 다음 버튼 (마지막 페이지 그룹일 경우 비활성화)
 	const nextDisabled = endPage === totalPages ? 'disabled' : '';
 	pagination.append(`<li class="page-item ${nextDisabled}"><button class="page-link" data-page="${endPage + 1}">&gt;</button></li>`);
-}
-
-
-// 콘텐츠 표시 함수
-function showContent(contentId) {
-	// 모든 콘텐츠 섹션 숨기기
-	$('.content-section').hide();
-	// 선택한 콘텐츠 섹션만 표시
-	$('#' + contentId).show();
 }
 
 

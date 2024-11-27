@@ -3,10 +3,14 @@ package com.study.mms.controller;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.validation.Valid;
 
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,6 +21,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.dto.UsersJoinDTO;
+import com.study.mms.dto.updatePasswordDTO;
 import com.study.mms.service.SendEmail;
 import com.study.mms.service.UserService;
 
@@ -80,13 +85,13 @@ public class UserController {
 		return userService.saveUserNickNameDatas(nickname, principalDetai);
 	}
 
-	@ResponseBody
-	@PostMapping("/save/change/password")
-	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경  API")
-	public Map<String, Object> changeUserPassword(@RequestBody UsersJoinDTO joinDTO,
-			@AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return userService.changeUserPassword(joinDTO, principalDetai);
-	}
+//	@ResponseBody
+//	@PostMapping("/save/change/password")
+//	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경  API")
+//	public Map<String, Object> changeUserPassword(@RequestBody UsersJoinDTO joinDTO,
+//			@AuthenticationPrincipal PrincipalDetail principalDetai) {
+//		return userService.changeUserPassword(joinDTO, principalDetai);
+//	}
 
 	@ResponseBody
 	@PostMapping("/get/signup/study")
@@ -101,6 +106,15 @@ public class UserController {
 	public Map<String, Object> getJoinStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetai) {
 		return userService.getJoinStudyLists(principalDetai);
 	}
+	
+	@ResponseBody
+	@PatchMapping("/info")
+	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경 API")
+	public Map<String, Object> passwordChange(@AuthenticationPrincipal PrincipalDetail principalDetai, 
+			 @ModelAttribute updatePasswordDTO passwordDTO, BindingResult bindingResult) {
+		return userService.changeUserPassword(passwordDTO, principalDetai);
+	}
+	
 
 	// ================ 오늘의 할 일 ================
 
