@@ -19,6 +19,6 @@ public interface StudyGroupJoinRequestRepository extends JpaRepository<StudyGrou
 	List<StudyGroupJoinRequest> findByUser(User user);
 
 	// groupId와 userId를 이용하여 특정 StudyGroupJoinRequest 조회
-	Optional<StudyGroupJoinRequest> findByIdAndUserId(Integer studyGroupId, Integer userId);
+	Optional<StudyGroupJoinRequest> findByIdAndUserId(Integer requestId, Integer userId);
 
 }

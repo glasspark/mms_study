@@ -198,4 +198,13 @@ public class UserController {
 		return userService.deleteUserInquiry(principalDetail, inquiryId);
 	}
 
+	// ================ 회원탈퇴 ================
+	@ResponseBody
+	@DeleteMapping("/user/info")
+	@Operation(summary = "회원탈퇴 API", description = "유저 회원 탈퇴 API")
+	public Map<String, Object> deleteUserInfo(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			Integer inquiryId) {
+		return userService.deleteUserInquiry(principalDetail, inquiryId);
+	}
+
 }

@@ -20,8 +20,16 @@
 				<li class="nav-item"><a class="nav-link" href="/mystudy">내
 						스터디</a></li>
 				<li class="nav-item"><a class="nav-link" href="/faq">Q&A</a></li>
-				<li class="nav-item"><a class="nav-link" href="/mypage">마이페이지</a>
-				</li>
+				<!-- 관리자 권한이 있는 경우 관리자 페이지 링크를 표시 -->
+				<li class="nav-item" sec:authorize="hasRole('ROLE_ADMIN')"><a
+					class="nav-link" href="/admin">관리자 페이지</a></li>
+
+				<!-- 일반 사용자 또는 권한이 없는 경우 마이페이지 링크를 표시 -->
+				<li class="nav-item" sec:authorize="!hasRole('ROLE_ADMIN')"><a
+					class="nav-link" href="/mypage">마이페이지</a></li>
+
+				<!-- 			<li class="nav-item"><a class="nav-link" href="/mypage">마이페이지</a>
+				</li> -->
 				<li class="nav-item"><a class="nav-link" href="/logout">로그아웃</a>
 				</li>
 			</ul>

@@ -210,9 +210,7 @@ $(document).ready(function() {
 				alert('닉네임 저장에 실패했습니다. 다시 시도해주세요.');
 			}
 		});
-
 	});
-
 
 
 	// ===== 스터디 ======
@@ -226,9 +224,6 @@ $(document).ready(function() {
 	$('#showApplied').on('click', function() {
 		getAppliedLists()
 	});
-
-
-
 
 
 	// ===== 1:1 문의 관련 API =====
