@@ -6,7 +6,7 @@ target/
 
 ### spring files ###
 src/main/resources/application.yml
-
+src/main/java/com/study/mms/social/
 ### STS ###
 .apt_generated
 .classpath

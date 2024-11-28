@@ -84,11 +84,10 @@ public class AdminMainController {
 		return "admin/inquiry";
 	}
 
-	//관리자 페이지에서 각 스터디 그룹을 관리 
+	// 관리자 페이지에서 각 스터디 그룹을 관리
 	@GetMapping("/studyGroups")
 	public String adminStudyGroupsBoard(@AuthenticationPrincipal PrincipalDetail principalDetai) {
 		return "admin/studyGroups";
 	}
-	
-	
+
 }

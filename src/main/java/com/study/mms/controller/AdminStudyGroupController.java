@@ -36,5 +36,10 @@ public class AdminStudyGroupController {
 			@RequestParam String status) {
 		return adminStudyGroupService.processStudyGroupRequest(authentication, num, status);
 	}
+	
+	
+	
+	
+	
 
 }
