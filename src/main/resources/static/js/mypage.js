@@ -1,6 +1,78 @@
 $(document).ready(function() {
 
 
+	// 탈퇴 버튼 클릭 이벤트 핸들러 추가
+	$(document).on('click', '.leave-group-btn', function() {
+		const groupId = $(this).data('group-id');
+		if (confirm('정말로 이 스터디에서 탈퇴하시겠습니까?')) {
+			// AJAX 요청으로 탈퇴 처리
+			$.ajax({
+				url: `/api/user/study/lists/${groupId}`,
+				type: 'DELETE',
+				success: function(response) {
+					console.log(response);
+					if (response.status === 'success') {
+						alert(response.message);
+						getStudyLists(); //리스트 다시 불러오기
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function(error) {
+					alert('탈퇴에 실패했습니다. 다시 시도해주세요.');
+				}
+			});
+		}
+	});
+
+
+	// 스터디 그룹 리스트 삭제
+	$(document).on('click', '.delete-group-btn', function() {
+		const groupId = $(this).data('group-id');
+		if (confirm('신청한 내역을 삭제하시겠습니까?')) {
+			// AJAX 요청으로 탈퇴 처리
+			$.ajax({
+				url: `/api/user/applied/study/${groupId}`,
+				type: 'DELETE',
+				success: function(response) {
+					if (response.status === 'success') {
+						alert(response.message);
+						getAppliedLists(); // 리스트 다시 불러오기
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function(error) {
+					alert('탈퇴에 실패했습니다. 다시 시도해주세요.');
+				}
+			});
+		}
+	});
+
+
+	// 스터디 그룹 리스트 취소
+	$(document).on('click', '.cancel-group-btn', function() {
+		const groupId = $(this).data('group-id');
+		if (confirm('신청을 취소 삭제하시겠습니까?')) {
+			// AJAX 요청으로 탈퇴 처리
+			$.ajax({
+				url: `/api/user/applied/study/${groupId}`,
+				type: 'DELETE',
+				success: function(response) {
+					if (response.status === 'success') {
+						alert("취소되었습니다.");
+						getAppliedLists(); // 리스트 다시 불러오기
+					} else {
+						alert(response.message);
+					}
+				},
+				error: function(error) {
+					alert('취소에 실패했습니다. 다시 시도해주세요.');
+				}
+			});
+		}
+	});
+
 	// 닉네임 변경 감지(닉네임만 변경하는 경우 처리)
 	$('#nickname').on('input', function() {
 		$('#saveBtn').prop('disabled', false).attr('data-type', 'nickname');
@@ -152,7 +224,7 @@ $(document).ready(function() {
 
 	// 신청한 스터디 
 	$('#showApplied').on('click', function() {
-	 getAppliedLists()
+		getAppliedLists()
 	});
 
 
@@ -227,6 +299,15 @@ function loadInquiries(page) {
 function renderInquiries(inquiries) {
 	const inquiryContainer = $("#InquiryAccordion");
 	inquiryContainer.empty();
+
+	// 데이터가 없을 경우 "1:1 문의가 없습니다"라는 메시지 표시
+	if (inquiries.length === 0) {
+		const noInquiryMessage = `<div class="text-center p-3">
+                                      <p class="text-muted">1 : 1 문의가 없습니다.</p>
+                                  </div>`;
+		inquiryContainer.append(noInquiryMessage);
+		return;
+	}
 
 	inquiries.forEach((inquiry) => {
 		const statusText = inquiry.status === "WAITING" ? "대기중" : "답변완료"; // 상태 변환
@@ -305,12 +386,78 @@ function getStudyLists() {
 		url: '/api/user/study/lists',
 		success: function(response) {
 			console.log(response);
+			setStudyLists(response.data);
 		},
 		error: function(xhr, status, error) {
 			console.error("데이터 로드 중 오류 발생:", error);
 		}
 	});
 
+
+}
+
+
+function setStudyLists(data) {
+	const container = $("#studyListContainer");
+	container.empty();
+	data.forEach(group => {
+
+		let roleText = '';
+		let actionButtons = '';
+
+
+		// 역할에 따라 한글로 설정
+		switch (group.role) {
+			case 'LEADER':
+				roleText = '방장';
+				// 방장인 경우 탈퇴 버튼을 보이지 않게 처리
+				actionButtons = `
+                    <a href="/mystudy/detail/${group.id}" class="btn btn-primary me-2" style="font-size: 0.8rem;">바로가기</a>
+                `;
+				break;
+			case 'SUB_LEADER':
+				roleText = '부방장';
+				// 부방장인 경우 탈퇴 버튼 표시
+				actionButtons = `
+                    <a href="/mystudy/detail/${group.id}" class="btn btn-primary me-2" style="font-size: 0.8rem;">바로가기</a>
+                    <button class="btn btn-danger leave-group-btn" data-group-id="${group.id}" style="font-size: 0.8rem;">탈퇴</button>
+                `;
+				break;
+			default:
+				roleText = '회원';
+				// 회원인 경우 탈퇴 버튼 표시
+				actionButtons = `
+                    <a href="/mystudy/detail/${group.id}" class="btn btn-primary me-2" style="font-size: 0.8rem;">바로가기</a>
+                    <button class="btn btn-danger leave-group-btn" data-group-id="${group.id}" style="font-size: 0.8rem;">탈퇴</button>
+                `;
+				break;
+		}
+
+
+		const card = `
+        <div class="card-body p-3">
+            <div class="row align-items-center gx-5">
+                <!-- Left Section: Member Status -->
+                <div class="col-auto d-flex align-items-center justify-content-center text-center text-lg-start mb-4 mb-lg-0 ps-1">
+                    <div class="bg-light p-2 rounded-4">
+                        <div class="text-primary fw-bolder">
+                                <span>${roleText}</span>  
+                        </div>
+                    </div>
+                </div>
+                <!-- Center Section: Study Group Name -->
+                <div class="col-lg-5 text-center text-lg-start ps-1">
+                    <h5 class="fw-normal">${group.name}</h5>
+                </div>
+                <!-- Right Section: Action Buttons -->
+                <div class="col-lg-4 text-lg-end ms-auto d-flex justify-content-end align-items-center ps-1 pe-1">
+   						  ${actionButtons}
+                </div>
+            </div>
+        </div>
+    `;
+		container.append(card);
+	});
 
 }
 
@@ -322,11 +469,77 @@ function getAppliedLists() {
 		type: 'GET',
 		url: '/api/user/applied/study',
 		success: function(response) {
-			console.log(response);
+
+			setAppliedLists(response.data);
 		},
 		error: function(xhr, status, error) {
 			console.error("데이터 로드 중 오류 발생:", error);
 		}
 	});
+
+}
+function setAppliedLists(data) {
+	const container = $("#appliedListContainer");
+	container.empty();
+
+
+
+	data.forEach(group => {
+		// 상태에 따른 한글 텍스트와 버튼 색상 설정
+		let statusText = '';
+		let statusColorClass = '';
+		let actionButton = ''; // 상태에 따른 액션 버튼
+
+		switch (group.status) {
+			case 'APPROVED':
+				statusText = '승인됨';
+				statusColorClass = 'text-success'; // 승인됨 - 녹색
+				// 승인됨 상태에서는 "삭제" 버튼
+				actionButton = `<button class="btn btn-danger delete-group-btn" data-group-id="${group.id}" style="font-size: 0.8rem;">삭제</button>`;
+				break;
+			case 'PENDING':
+				statusText = '대기 중';
+				statusColorClass = 'text-warning'; // 대기 중 - 주황색
+				// 대기 중 상태에서는 "취소" 버튼
+				actionButton = `<button class="btn btn-primary cancel-group-btn" data-group-id="${group.id}" style="font-size: 0.8rem;">취소</button>`;
+				break;
+			case 'REJECTED':
+				statusText = '거절됨';
+				statusColorClass = 'text-danger'; // 거절됨 - 빨간색
+				// 거절됨 상태에서도 "취소" 버튼
+				actionButton = `<button class="btn btn-primary cancel-group-btn" data-group-id="${group.id}" style="font-size: 0.8rem;">취소</button>`;
+				break;
+			default:
+				statusText = '알 수 없음';
+				statusColorClass = 'text-secondary'; // 기본 - 회색
+				break;
+		}
+
+
+		const card = `
+            <div class="card-body p-3">
+                <div class="row align-items-center gx-5">
+                    <!-- 왼쪽 섹션: 멤버 상태 -->
+                    <div class="col-auto d-flex align-items-center justify-content-center text-center text-lg-start mb-4 mb-lg-0  ps-1">
+                        <div class="bg-light p-2 rounded-4">
+                            <div class="fw-bolder ${statusColorClass}">
+                                <span>${statusText}</span>  
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 중앙 섹션: 스터디 그룹 이름 -->
+                    <div class="col-lg-5 text-center text-lg-start ps-1">
+                        <h5 class="fw-normal">${group.name}</h5>
+                    </div>
+                    <!-- 오른쪽 섹션: 액션 버튼 -->
+                    <div class="col-lg-4 text-lg-end ms-auto d-flex justify-content-end align-items-center ps-1 pe-1">
+              ${actionButton}
+                    </div>
+                </div>
+            </div>
+        `;
+		container.append(card);
+	});
+
 
 }

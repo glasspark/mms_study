@@ -1,6 +1,7 @@
 package com.study.mms.repository;
 
 import java.util.List;
+import java.util.Optional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -16,5 +17,8 @@ public interface StudyGroupJoinRequestRepository extends JpaRepository<StudyGrou
 	List<StudyGroupJoinRequest> findByStudyGroupAndStatus(StudyGroup studyGroup, RequestStatus pending);
 
 	List<StudyGroupJoinRequest> findByUser(User user);
+
+	// groupId와 userId를 이용하여 특정 StudyGroupJoinRequest 조회
+	Optional<StudyGroupJoinRequest> findByIdAndUserId(Integer studyGroupId, Integer userId);
 
 }

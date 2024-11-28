@@ -9,9 +9,11 @@ import javax.servlet.http.HttpServletRequest;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -68,25 +70,25 @@ public class UserController {
 	@PostMapping("/save/random/info")
 	@Operation(summary = "마이페이지 랜덤 이미지 변경 시 사용자 정보 저장 API", description = "마이페이지에서 랜덤 이미지를 사용하여 개인 정보를 변경한 회원정보 저장 API")
 	public Map<String, Object> saveUserDefaultImgAndDatas(@RequestParam("imagePath") String imagePath,
-			@RequestParam("nickname") String nickname, @AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return userService.saveUserDefaultImgAndDatas(imagePath, nickname, principalDetai);
+			@RequestParam("nickname") String nickname, @AuthenticationPrincipal PrincipalDetail principalDetail) {
+		return userService.saveUserDefaultImgAndDatas(imagePath, nickname, principalDetail);
 	}
 
 	@ResponseBody
 	@PostMapping("/save/info")
 	@Operation(summary = "마이페이지 사용자 지정 이미지 변경 시 사용자 정보 저장 API", description = "마이페이지에서 이미지를 지정하여 변경한 회원정보 저장 API")
 	public Map<String, Object> saveUserDatas(@RequestParam("imagePath") MultipartFile imagePath,
-			@RequestParam("nickname") String nickname, @AuthenticationPrincipal PrincipalDetail principalDetai,
+			@RequestParam("nickname") String nickname, @AuthenticationPrincipal PrincipalDetail principalDetail,
 			HttpServletRequest req) {
-		return userService.saveUserDatas(imagePath, nickname, principalDetai, req);
+		return userService.saveUserDatas(imagePath, nickname, principalDetail, req);
 	}
 
 	@ResponseBody
 	@PostMapping("/save/nickname/info")
 	@Operation(summary = "마이페이지 사용자 지정 이미지 변경 시 사용자 정보 저장 API", description = "마이페이지에서 이미지를 지정하여 변경한 회원정보 저장 API")
 	public Map<String, Object> saveUserNickNameDatas(@RequestParam("nickname") String nickname,
-			@AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return userService.saveUserNickNameDatas(nickname, principalDetai);
+			@AuthenticationPrincipal PrincipalDetail principalDetail) {
+		return userService.saveUserNickNameDatas(nickname, principalDetail);
 	}
 
 //	@ResponseBody
@@ -98,28 +100,46 @@ public class UserController {
 //	}
 
 	@ResponseBody
-	@GetMapping("/applied/study")
-	@Operation(summary = "마이페이지 스터디 그룹 신청 리스트 API", description = "마이페이지에서 내가 신청한 스터디 그룹의 리스트 반환 API")
-	public Map<String, Object> getSignUpStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return userService.getSignUpStudyLists(principalDetai);
+	@PatchMapping("/info")
+	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경 API")
+	public Map<String, Object> passwordChange(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@ModelAttribute updatePasswordDTO passwordDTO, BindingResult bindingResult) {
+		return userService.changeUserPassword(passwordDTO, principalDetail);
 	}
+
+	// ================ 스터디 ================
 
 	@ResponseBody
 	@GetMapping("/study/lists")
 	@Operation(summary = "마이페이지 가입한 스터디 그룹 리스트 API", description = "마이페이지에서 내가 가입한 스터디 그룹의 리스트 반환 API")
-	public Map<String, Object> getJoinStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetai) {
+	public Map<String, Object> getJoinStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetail) {
 		Map<String, Object> returnMap = new HashMap<>();
-		List<StudyGroupDTO> listDto = studyGroupService.getUserStudyGroup(principalDetai);
+		List<StudyGroupDTO> listDto = studyGroupService.getUserStudyGroup(principalDetail);
 		returnMap.put("data", listDto);
 		return returnMap;
 	}
 
 	@ResponseBody
-	@PatchMapping("/info")
-	@Operation(summary = "마이페이지 비밀번호 변경 API", description = "마이페이지 비밀번호 변경 API")
-	public Map<String, Object> passwordChange(@AuthenticationPrincipal PrincipalDetail principalDetai,
-			@ModelAttribute updatePasswordDTO passwordDTO, BindingResult bindingResult) {
-		return userService.changeUserPassword(passwordDTO, principalDetai);
+	@DeleteMapping("/study/lists/{groupId}")
+	@Operation(summary = "마이페이지 스터디 그룹 탈퇴 API", description = "마이페이지에서 그룹 탈퇴 API")
+	public Map<String, Object> studyGroupWithdrawal(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@PathVariable("groupId") Integer groupId) {
+		return userService.studyGroupWithdrawal(principalDetail, groupId);
+	}
+
+	@ResponseBody
+	@GetMapping("/applied/study")
+	@Operation(summary = "마이페이지 스터디 그룹 신청 리스트 API", description = "마이페이지에서 내가 신청한 스터디 그룹의 리스트 반환 API")
+	public Map<String, Object> getSignUpStudyLists(@AuthenticationPrincipal PrincipalDetail principalDetail) {
+		return userService.getSignUpStudyLists(principalDetail);
+	}
+
+	@ResponseBody
+	@DeleteMapping("/applied/study/{groupId}")
+	@Operation(summary = "마이페이지 스터디 그룹 신청 리스트 삭제 API", description = "마이페이지에서 내가 신청한 스터디 그룹의 신청 리스트 삭제 API")
+	public Map<String, Object> deleteApplicationDetails(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@PathVariable("groupId") Integer groupId) {
+		return userService.deleteApplicationDetails(principalDetail, groupId);
 	}
 
 	// ================ 오늘의 할 일 ================

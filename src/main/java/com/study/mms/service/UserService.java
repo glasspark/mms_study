@@ -30,6 +30,7 @@ import com.study.mms.dto.joinRequestDTO;
 import com.study.mms.dto.updatePasswordDTO;
 import com.study.mms.model.Attendance;
 import com.study.mms.model.Inquiry;
+import com.study.mms.model.StudyGroup;
 import com.study.mms.model.StudyGroupJoinRequest;
 import com.study.mms.model.StudyGroupMember;
 import com.study.mms.model.Todo;
@@ -38,6 +39,7 @@ import com.study.mms.repository.AttendanceRepository;
 import com.study.mms.repository.InquiryRepository;
 import com.study.mms.repository.StudyGroupJoinRequestRepository;
 import com.study.mms.repository.StudyGroupMemberRepository;
+import com.study.mms.repository.StudyGroupRepository;
 import com.study.mms.repository.TodoRepository;
 import com.study.mms.repository.UserRepository;
 import com.study.mms.util.ImageUploader;
@@ -54,6 +56,7 @@ public class UserService {
 	private final StudyGroupJoinRequestRepository studyGroupJoinRequestRepository;
 	private final StudyGroupMemberRepository studyGroupMemberRepository;
 	private final InquiryRepository inquiryRepository;
+	private final StudyGroupRepository studyGroupRepository;
 
 	private final BCryptPasswordEncoder passwordEncoder;
 
@@ -778,6 +781,91 @@ public class UserService {
 			returnMap.put("error", e.getMessage());
 		}
 
+		return returnMap;
+	}
+
+	// 마이페이지 스터디 그룹 탈퇴
+	public Map<String, Object> studyGroupWithdrawal(PrincipalDetail principalDetail, Integer groupId) {
+		// TODO Auto-generated method stub
+		Map<String, Object> returnMap = new HashMap<>();
+		try {
+
+			User user = principalDetail.getUser();
+
+			// 1. 이 스터디 그룹에서 나의 권한 확인. 반장인 경우 탈퇴 X 스터디 그룹 자체 삭제해야 하므로 이동
+			// 스터디 그룹 정보 가져오기
+			StudyGroup studyGroup = studyGroupRepository.findById(groupId)
+					.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
+
+			// 만약 방장인 경우 스터디 그룹 삭제 페이지로 이동
+			if (studyGroup.getLeader().getId().equals(user.getId())) {
+				returnMap.put("status", "error");
+				returnMap.put("message", "방장은 탈퇴 불가능 합니다.");
+				return returnMap;
+			}
+
+			// 탈퇴 시 이전에 작성한 게시글들은? (그대로 남겨짐)
+			// 스터디 멤버 DB 에서 해당 유저의 데이터만 삭제 할 것
+			Optional<StudyGroupMember> optMember = studyGroupMemberRepository.findByUserIdAndStudyGroupId(user.getId(),
+					groupId);
+
+			if (!optMember.isPresent()) {
+				returnMap.put("status", "error");
+				returnMap.put("message", "멤버가 아닙니다.");
+				return returnMap;
+			}
+
+			// 부반장이라면
+			if (studyGroup.getSubLeader() != null && studyGroup.getSubLeader().getId().equals(user.getId())) {
+				studyGroup.setSubLeader(null);
+			}
+
+			StudyGroupMember getMember = optMember.get();
+			studyGroupMemberRepository.delete(getMember);
+
+			returnMap.put("status", "success");
+			returnMap.put("message", "탈퇴되었습니다.");
+			studyGroupRepository.save(studyGroup);
+
+		} catch (IllegalArgumentException e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", e.getMessage());
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생하였습니다.");
+			returnMap.put("error", e.getMessage());
+		}
+
+		return returnMap;
+	}
+
+	// 마이페이지 스터디 그룹 신청 리스트 삭제
+	public Map<String, Object> deleteApplicationDetails(PrincipalDetail principalDetail, Integer requestId) {
+		// TODO Auto-generated method stub
+		Map<String, Object> returnMap = new HashMap<>();
+		try {
+
+			User user = principalDetail.getUser();
+
+			Optional<StudyGroupJoinRequest> optRequest = studyGroupJoinRequestRepository.findByIdAndUserId(requestId,
+					user.getId());
+
+			if (!optRequest.isPresent()) {
+				returnMap.put("status", "error");
+				returnMap.put("message", "데이터 조회에 실패하였습니다.");
+				return returnMap;
+			}
+
+			StudyGroupJoinRequest request = optRequest.get();
+			studyGroupJoinRequestRepository.delete(request);
+
+			returnMap.put("status", "success");
+			returnMap.put("message", "삭제되었습니다.");
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생하였습니다.");
+			returnMap.put("error", e.getMessage());
+		}
 		return returnMap;
 	}
 
