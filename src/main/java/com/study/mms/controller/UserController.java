@@ -68,16 +68,9 @@ public class UserController {
 	@ResponseBody
 	@PostMapping("/help/idInquiry")
 	@Operation(summary = "아이디 찾기 API", description = "아이디 찾기  API")
-	public Map<String, Object> helpIdInqury(@RequestParam("email") String email, HttpServletRequest req) {
-		return userService.helpIdInqury(email, req);
-	}
-
-	// 비밀번호 찾기
-	@ResponseBody
-	@PostMapping("/help/pwInquiry")
-	@Operation(summary = "비밀번호 찾기 API", description = "비밀번호 찾기 API")
-	public Map<String, Object> helpPwInqury(@RequestParam("key") String key, HttpServletRequest req) {
-		return userService.helpPwInqury(key, req);
+	public Map<String, Object> helpIdInqury(@RequestParam("email") String email, HttpServletRequest req,
+			@RequestParam("type") String type) {
+		return userService.helpIdAndPwInqury(email, type,req);
 	}
 
 	// ================ 마이페이지 ================

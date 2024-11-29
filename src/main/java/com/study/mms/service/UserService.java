@@ -871,13 +871,17 @@ public class UserService {
 		return returnMap;
 	}
 
-	// 아이디 찾기(인증 코드는 인증하는 API 재활용)
-	public Map<String, Object> helpIdInqury(String email, HttpServletRequest req) {
+	// 아이디 비밀번호 찾기 API (인증은 인증코드 재사용)
+	public Map<String, Object> helpIdAndPwInqury(String email, String type, HttpServletRequest req) {
 		// TODO Auto-generated method stub
 		Map<String, Object> returnMap = new HashMap<>();
 		try {
-			// 이메일 입력
 
+			if (!type.equals("id") && !type.equals("pw")) {
+				throw new Exception("잘못된 값입니다.");
+			}
+
+			// 이메일 입력
 			List<User> getEmail = usersRepository.findAllByEmail(email);
 			if (getEmail != null && !getEmail.isEmpty()) {
 				User firstUser = getEmail.get(0); // 첫 번째 사용자 이메일 가져와서 전송
@@ -888,21 +892,6 @@ public class UserService {
 			} else {
 				throw new Exception("해당 이메일로 사용자를 찾을 수 없습니다.");
 			}
-
-		} catch (Exception e) {
-			// TODO: handle exception
-			returnMap.put("status", "error");
-			returnMap.put("message", "오류가 발생하였습니다.");
-			returnMap.put("error", e.getMessage());
-		}
-		return returnMap;
-	}
-
-	// 비밃번호 찾기
-	public Map<String, Object> helpPwInqury(String key, HttpServletRequest req) {
-		// TODO Auto-generated method stub
-		Map<String, Object> returnMap = new HashMap<>();
-		try {
 
 		} catch (Exception e) {
 			// TODO: handle exception
