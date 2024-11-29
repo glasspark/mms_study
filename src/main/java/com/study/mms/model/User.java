@@ -61,6 +61,18 @@ public class User {
 	@Comment("salt")
 	private String salt;
 
+	@Column(name = "sns")
+	@Comment("sns")
+	private String sns;
+
+	@Column(name = "snsId")
+	@Comment("sns아이디")
+	private String snsId;
+	
+	@Column(name = "token")
+	@Comment("토큰")
+	private String token;
+
 	@CreatedDate
 	@Column(name = "created")
 	@Comment("계정 생성")
@@ -113,10 +125,10 @@ public class User {
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<Inquiry> Inquiry;
 
-	//아래의 것은 고래해 볼 것(회원 탈퇴하면 전체 사라지는것인지)
+	// 아래의 것은 고래해 볼 것(회원 탈퇴하면 전체 사라지는것인지)
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<StudyGroupMember> studyGroupMemberships;
-	
+
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<StudyBoard> studyBoards;
 

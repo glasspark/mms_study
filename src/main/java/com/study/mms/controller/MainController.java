@@ -51,6 +51,13 @@ public class MainController {
 	public String join() {
 		return "join";
 	}
+	
+	// 아이디, 비밀번호 찾기 
+	@GetMapping("/help/info/{type}")
+	public String helpInfo(@PathVariable("type") String type, Model model) {
+		model.addAttribute("type", type);
+		return "/helpInfo";
+	}
 
 	// 스터디
 	@GetMapping("/study")

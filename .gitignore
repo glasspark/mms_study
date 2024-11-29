@@ -7,6 +7,8 @@ target/
 ### spring files ###
 src/main/resources/application.yml
 src/main/java/com/study/mms/social/
+src/main/java/com/study/mms/service/SendEmail.java
+
 ### STS ###
 .apt_generated
 .classpath

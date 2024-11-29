@@ -58,7 +58,7 @@ public class SecurityConfig {
 		http.csrf().disable()
 				.authorizeHttpRequests(auth -> auth
 						.antMatchers("/api/**", "/", "/css/**", "/js/**", "/img/**", "/join", "/swagger-ui/**",
-								"/v3/api-docs/**", "/swagger-resources/**", "/webjars/**","/error/**")
+								"/v3/api-docs/**", "/swagger-resources/**", "/webjars/**","/error/**","/auth/**")
 						.permitAll() // 이 경로는 인증
 						.antMatchers("/admin/**").hasRole("ADMIN") // /admin/** 경로는 ROLE_ADMIN만 접근 가능
 						.anyRequest().authenticated()) //그 외 나머지는 접근 가능

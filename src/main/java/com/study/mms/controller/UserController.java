@@ -64,6 +64,22 @@ public class UserController {
 		return userService.verifyAuthCode(key, req);
 	}
 
+	// 아이디 찾기
+	@ResponseBody
+	@PostMapping("/help/idInquiry")
+	@Operation(summary = "아이디 찾기 API", description = "아이디 찾기  API")
+	public Map<String, Object> helpIdInqury(@RequestParam("email") String email, HttpServletRequest req) {
+		return userService.helpIdInqury(email, req);
+	}
+
+	// 비밀번호 찾기
+	@ResponseBody
+	@PostMapping("/help/pwInquiry")
+	@Operation(summary = "비밀번호 찾기 API", description = "비밀번호 찾기 API")
+	public Map<String, Object> helpPwInqury(@RequestParam("key") String key, HttpServletRequest req) {
+		return userService.helpPwInqury(key, req);
+	}
+
 	// ================ 마이페이지 ================
 
 	@ResponseBody
