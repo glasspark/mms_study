@@ -115,7 +115,6 @@ $(document).ready(function() {
 		});
 	});
 
-
 	//presentation , fc-scrollgrid-sync-table
 	var calendarEl = $('#calendar')[0];  // jQuery로 요소를 선택하고 DOM 요소를 가져옵니다.
 	var calendar = new FullCalendar.Calendar(calendarEl, {

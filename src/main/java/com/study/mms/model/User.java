@@ -68,7 +68,7 @@ public class User {
 	@Column(name = "snsId")
 	@Comment("sns아이디")
 	private String snsId;
-	
+
 	@Column(name = "token")
 	@Comment("토큰")
 	private String token;
@@ -131,5 +131,11 @@ public class User {
 
 	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
 	private List<StudyBoard> studyBoards;
+
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BoardReply> boardReplies;
+	
+	@OneToMany(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
+	private List<BoardComment> boardComments;
 
 }

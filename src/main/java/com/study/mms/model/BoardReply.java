@@ -1,9 +1,7 @@
 package com.study.mms.model;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
-import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityListeners;
@@ -12,65 +10,55 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
 import javax.persistence.PrePersist;
 import javax.persistence.Table;
+import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.Comment;
 import org.springframework.data.annotation.CreatedDate;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
+import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
+import lombok.Getter;
 import lombok.NoArgsConstructor;
 
 @Entity
-@Data
-@Builder // 빌더 패턴 활성화
-@NoArgsConstructor // 기본 생성자 생성
-@AllArgsConstructor // 모든 필드를 포함하는 생성자 생성
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor
 @EntityListeners(AuditingEntityListener.class) // Auditing 기능 활성화
-@Table(name = "study_board")
-public class StudyBoard {
+@Table(name = "board_relpy")
+public class BoardReply {
 
 	@Id
 	@GeneratedValue(strategy = GenerationType.IDENTITY)
 	@Column(name = "id", updatable = false)
 	private Integer id;
 
+	@Column(name = "content", length = 1500, nullable = false)
+	@Size(max = 1500, message = "댓글은 최대 1500자까지 작성할 수 있습니다.")
+	@Comment("답글 내용")
+	private String content;
+
 	@CreatedDate
 	@Column(name = "created_at")
-	@Comment("생성일")
+	@Comment("답글 작성일")
 	private LocalDateTime createdAt;
 
 	@PrePersist
 	public void onPrePersist() {
-		this.createdAt = LocalDateTime.now().withNano(0); // 소수점 이하 초 제거
+		this.createdAt = LocalDateTime.now().withNano(0); // 댓글 생성일 설정, 소수점 이하 초 제거
 	}
-
-	@Column(name = "title", nullable = false)
-	@Comment("제목")
-	private String title;
-
-	@Column(name = "content", columnDefinition = "TEXT", nullable = false)
-	@Comment("내용")
-	private String content;
-
-	@Column(name = "img")
-	@Comment("이미지")
-	private String img;
-
-	@ManyToOne
-	@JoinColumn(name = "study_group_id")
-	private StudyGroup studyGroup; // 스터디 그룹과 매핑
 
 	@ManyToOne
 	@JoinColumn(name = "user_id")
+	@Comment("작성자")
 	private User user;
 
-	// 스터디 그룹 게시판 댓글 관련
-	@OneToMany(mappedBy = "studyBoard", cascade = CascadeType.ALL, orphanRemoval = true)
-	private List<BoardComment> boardComments;
+	@ManyToOne
+	@JoinColumn(name = "study_comment_id")
+	@Comment("스터디 그룹 게시판 댓글")
+	private BoardComment boardComment;
 
 }

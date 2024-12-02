@@ -14,18 +14,19 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.access.AccessDeniedException;
-import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.multipart.MultipartFile;
 
 import com.study.mms.auth.PrincipalDetail;
-import com.study.mms.dto.CreateStudyGroupDTO;
+import com.study.mms.constants.ErrorCode;
 import com.study.mms.dto.ReponseJoinDTO;
 import com.study.mms.dto.ScheduleDTO;
 import com.study.mms.dto.StudyBoardDTO;
 import com.study.mms.dto.StudyGroupMemberDTO;
 import com.study.mms.dto.UploadedFileDTO;
+import com.study.mms.exception.CustomException;
+import com.study.mms.model.BoardComment;
 import com.study.mms.model.GroupSchedule;
 import com.study.mms.model.StudyBoard;
 import com.study.mms.model.StudyGroup;
@@ -33,6 +34,7 @@ import com.study.mms.model.StudyGroupJoinRequest;
 import com.study.mms.model.StudyGroupMember;
 import com.study.mms.model.UploadedFile;
 import com.study.mms.model.User;
+import com.study.mms.repository.BoardCommentRepository;
 import com.study.mms.repository.GroupScheduleRepository;
 import com.study.mms.repository.StudyBoardRepository;
 import com.study.mms.repository.StudyGroupJoinRequestRepository;
@@ -56,6 +58,7 @@ public class StudyGroupDetailService {
 	private final UploadedFileRepository uploadedFileRepository;
 	private final StudyBoardRepository studyBoardRepository;
 	private final StudyGroupService studyGroupService;
+	private final BoardCommentRepository boardCommentRepository;
 
 	@Transactional
 	public Map<String, Object> test(PrincipalDetail principalDetail) {
@@ -829,4 +832,23 @@ public class StudyGroupDetailService {
 
 		return returnMap;
 	}
+
+	// 스터디 그룹 게시판 생성
+	@Transactional
+	public Map<String, Object> saveBoardComment(PrincipalDetail principalDetail, String content, Integer boardId) {
+
+		User user = principalDetail.getUser();
+
+		// 스터디 그룹 내 게시판 조회
+		StudyBoard studyBoard = studyBoardRepository.findById(boardId)
+				.orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+
+		BoardComment boardComment = BoardComment.builder().content(content).user(user).studyBoard(studyBoard).build();
+		boardCommentRepository.save(boardComment);
+
+		
+		
+		return null;
+	}
+
 }
