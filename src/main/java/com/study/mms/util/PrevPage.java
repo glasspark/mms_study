@@ -8,7 +8,7 @@ public class PrevPage {
 		String referrer = request.getHeader("Referer");
 		String requstURL = request.getRequestURL().toString();
 		if (referrer != null) {
-			if (!referrer.contains("/auth/login")) {
+			if (!referrer.contains("/")) {
 				request.getSession().setAttribute("prevPage", referrer);
 				request.getSession().setAttribute("nowPage", requstURL);
 			}

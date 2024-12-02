@@ -189,7 +189,7 @@ $(document).ready(function() {
 
 
 	// ===== 내 정보 - 비밀번호 변경 =====
-	// 사용자 지정 이미지 업로드
+	// 비밀번호 변경
 	$('#changePasswordBtn').on('click', function(event) {
 		event.preventDefault();
 		let form = $('#pwForm')[0]; // 폼 요소 가져오기

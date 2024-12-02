@@ -1,15 +1,26 @@
 $(document).ready(function() {
 
+	// 기본적으로 이메일 섹션만 보이게 설정
+	$('#emailSection').show();
+	$('#showIdSection').hide();
+	$('#showPwSection').hide();
+
+
+
 
 	$('#sendCodeBtn').on('click', function() {
 
 		const email = $('#email').val();
+		const type = $('#inquryType').val();
 
 		// AJAX 요청
 		$.ajax({
-			url: '/api/user/send/code', // 서버의 엔드포인트 URL
+			url: '/api/user/help/inquiry', // 서버의 엔드포인트 URL
 			type: 'POST',
-			data: { email: email }, // JSON 형식으로 데이터를 보냄
+			data: {
+				email: email,
+				type: type
+			}, // JSON 형식으로 데이터를 보냄
 			success: function(response) {
 				if (response.status === 'success') {
 					//인증번호 전송 -> 확인 으로 변경
@@ -51,15 +62,15 @@ $(document).ready(function() {
 		});
 	});
 
-
 	// 인증번호 전송 후 확인 시 사용 
 	$('#checkCodeBtn').on('click', function() {
 		const key = $('#emailCheck').val();
-		console.log(email);
+		const email = $('#email').val();
+		const type = $('#inquryType').val();
 		$.ajax({
-			url: '/api/user/check/email', // 서버의 엔드포인트 URL
+			url: '/api/user/process/inquiry', // 서버의 엔드포인트 URL
 			type: 'POST',
-			data: { key: key }, // JSON 형식으로 데이터를 보냄
+			data: { key: key, email: email }, // JSON 형식으로 데이터를 보냄
 			success: function(response) {
 				console.log(response);
 				if (response.status === true) {
@@ -69,27 +80,59 @@ $(document).ready(function() {
 					$('#completeCode').removeClass('hidden'); // 인증완료 버튼 보이게
 					$('#checkCodeBtn').addClass('hidden'); // 확인 버튼 숨기기
 					$('#sendCodeBtn').addClass('hidden'); // 인증번호 전송 버튼 숨기기
+
+					// 완료 버튼 활성화
+					$('#completeBtn').prop('disabled', false);
+
+					// 이메일 섹션 숨기기
+					$('#emailSection').hide();
+					if (type === 'id') {
+						$('#showPwSection').hide();
+						$('#emailSection').hide();
+						$('#showIdSection').show();
+						$('#fetchedUserId').text(response.account);
+					} else if (type === 'pw') {
+
+						$('#emailSection').hide();
+						$('#showIdSection').hide();
+						$('#showPwSection').show();
+					}
 				}
 			}
 		});
 	});
 
-	//데이터 전송
-	$('#scSubmitButtons').on('click', function() {
-		const sns = $(this).data('sns'); // 버튼의 data-sns 값을 가져옴
-		
-		switch (sns) {
-			case "kakao":
-				location.href = '/auth/kakaoLoginPage?step=1';
-				break;
-			case "naver":
-				location.href = '/auth/naverLoginPage?step=1';
-				break;
-			default:
-				alert("잘못된 접근입니다.");
-				location.href = '/auth/login';
-				return;
-		}
+	$('#changePasswordBtn').on('click', function() {
+
+		const email = $('#email').val();
+		const newPassword = $('#newPassword').val();
+		const passwordCheck = $('#passwordCheck').val();
+
+		$.ajax({
+			url: '/api/user/help/inquiry', // 요청을 보낼 URL
+			type: 'PATCH',
+			data: {
+				email: email,
+				newPassword: newPassword,
+				passwordCheck: passwordCheck
+			},
+			success: function(response) {
+				// 성공적으로 응답을 받았을 때 실행할 코드
+				console.log('Success:', response);
+				alert("비밀번호 변경 성공");
+				window.location.href = '/home';
+			},
+			error: function(xhr, status, error) {
+				// 에러가 발생했을 때 실행할 코드
+				console.error('Error:', xhr.responseText);
+				alert("비밀번호 변경 실패");
+			}
+		});
+	});
+
+	//메인 이동 버튼
+	$('.go-main').on('click', function() {
+		window.location.href = '/home';
 	});
 
 });

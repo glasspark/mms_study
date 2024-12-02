@@ -51,10 +51,18 @@ public class MainController {
 	public String join() {
 		return "join";
 	}
-	
-	// 아이디, 비밀번호 찾기 
+
+	// 아이디, 비밀번호 찾기
 	@GetMapping("/help/info/{type}")
 	public String helpInfo(@PathVariable("type") String type, Model model) {
+
+		if (type.equals("id")) {
+			model.addAttribute("typeName", "아이디");
+		} else if (type.equals("pw")) {
+			model.addAttribute("typeName", "비밀번호");
+		} else {
+			return "/index";
+		}
 		model.addAttribute("type", type);
 		return "/helpInfo";
 	}
@@ -114,7 +122,7 @@ public class MainController {
 		String userRole = studyGroupService.isUserMemberOfRole(principalDetail, groupId);
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("userRole", userRole);
-		//스터디 그룹에 대한 정보를 반환
+		// 스터디 그룹에 대한 정보를 반환
 		StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(groupId);
 		model.addAttribute("studyGroup", studyGroup);
 		return "mystudyDetail";
@@ -128,7 +136,7 @@ public class MainController {
 			@RequestParam(value = "boardId", required = false) Integer boardId, Model model) {
 		model.addAttribute("groupId", groupId);
 		model.addAttribute("boardId", boardId);
-		if(boardId != null) {
+		if (boardId != null) {
 			StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
 			model.addAttribute("boardDetail", boardDetail);
 		}

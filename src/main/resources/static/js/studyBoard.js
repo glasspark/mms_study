@@ -92,8 +92,9 @@ $(document).ready(function() {
 					toolbar: []
 				}
 			})
-
 			.then(newEditor => {
+				// 크기 높이기
+				$('style').append('.ck-content { height: 400px; }');
 				editor = newEditor;
 			})
 			.catch(error => {

@@ -66,11 +66,27 @@ public class UserController {
 
 	// 아이디 찾기
 	@ResponseBody
-	@PostMapping("/help/idInquiry")
-	@Operation(summary = "아이디 찾기 API", description = "아이디 찾기  API")
+	@PostMapping("/help/inquiry")
+	@Operation(summary = "아이디, 비밀번호 찾기 API", description = "아이디, 비밀번호 찾기  API")
 	public Map<String, Object> helpIdInqury(@RequestParam("email") String email, HttpServletRequest req,
 			@RequestParam("type") String type) {
-		return userService.helpIdAndPwInqury(email, type,req);
+		return userService.helpIdAndPwInqury(email, type, req);
+	}
+
+	@ResponseBody
+	@PostMapping("/process/inquiry")
+	@Operation(summary = "아이디, 비밀번호 찾기 인증  API", description = "아이디 찾기 인증 API")
+	public Map<String, Object> processAccountInquiry(@RequestParam("key") String key,
+			@RequestParam("email") String email, HttpServletRequest req) {
+		return sendEmail.verifyAuthCode(key, email, req);
+	}
+
+	@ResponseBody
+	@PatchMapping("/help/inquiry")
+	@Operation(summary = "아이디, 비밀번호 찾기 인증  API", description = "아이디 찾기 인증 API")
+	public Map<String, Object> helpChangeUserPassword(	@RequestParam("newPassword") String newPassword,
+			@RequestParam("passwordCheck") String passwordCheck,	@RequestParam("email") String email) {
+		return userService.helpChangeUserPassword(newPassword , passwordCheck, email);
 	}
 
 	// ================ 마이페이지 ================

@@ -872,6 +872,7 @@ public class UserService {
 	}
 
 	// 아이디 비밀번호 찾기 API (인증은 인증코드 재사용)
+	@Transactional
 	public Map<String, Object> helpIdAndPwInqury(String email, String type, HttpServletRequest req) {
 		// TODO Auto-generated method stub
 		Map<String, Object> returnMap = new HashMap<>();
@@ -899,6 +900,57 @@ public class UserService {
 			returnMap.put("message", "오류가 발생하였습니다.");
 			returnMap.put("error", e.getMessage());
 		}
+		return returnMap;
+	}
+
+	// 비밀번호 찾기 비밀번호 변경
+	@Transactional
+	public Map<String, Object> helpChangeUserPassword(String newPassword, String passwordCheck, String email) {
+
+		Map<String, Object> returnMap = new HashMap<>();
+
+		try {
+			// 이메일 입력
+			List<User> getEmail = usersRepository.findAllByEmail(email);
+			if (getEmail != null && !getEmail.isEmpty()) {
+				User user = getEmail.get(0); // 첫 번째 사용자 이메일 가져와서 전송
+
+				// 비밀번호 일치 확인
+				if (!newPassword.equals(newPassword)) {
+					returnMap.put("status", "fail");
+					returnMap.put("message", "비밀번호가 틀렸습니다.");
+					return returnMap;
+				}
+
+				// 비밀번호 유효성 검사
+				String password = newPassword;
+				String passwordValidationMessage = validatePassword(password);
+				if (passwordValidationMessage != null) {
+					returnMap.put("status", "fail");
+					returnMap.put("message", passwordValidationMessage);
+					return returnMap;
+				}
+				// 비밀번호 암호화 및 사용자 정보 저장
+				String salt = BCrypt.gensalt();
+				String encPassword = BCrypt.hashpw(password, salt);
+
+				user.setSalt(salt);
+				user.setPassword(encPassword);
+				usersRepository.save(user);
+
+				returnMap.put("status", "success");
+				returnMap.put("message", "비밀번호가 변경 되었습니다.");
+
+			} else {
+				throw new Exception("해당 이메일로 사용자를 찾을 수 없습니다.");
+			}
+
+		} catch (Exception e) {
+			returnMap.put("status", "error");
+			returnMap.put("message", "오류가 발생하였습니다.");
+			returnMap.put("error", e.getMessage());
+		}
+
 		return returnMap;
 	}
 

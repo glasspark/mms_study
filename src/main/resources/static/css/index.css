@@ -1,0 +1,17 @@
+.help_section {
+	list-style: none;
+}
+
+.help_link {
+	text-decoration: none;
+	color: #6c757d;
+}
+
+.help_link:hover {
+	text-decoration: underline;
+	color: #6c757d;
+}
+
+.divider {
+	color: #6c757d;
+}

@@ -40,6 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Core theme JS-->
 <script src="/js/mystudyDetail.js"></script>
+
 </head>
 <body class="d-flex flex-column h-100 bg-light">
 	<main class="flex-shrink-0">
@@ -110,28 +111,6 @@
 								<div class="col-md-10 col-lg-10 ps-4">
 									<div class="card border-0 rounded-4">
 										<div class="card-body" id="content">
-											<!-- Default content -->
-
-											<!-- 				<div id="study" class="content-section d-none">
-												<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
-												<hr>
-
-												<div>
-													<div>
-														방장<i class="fas fa-crown text-warning"></i>
-														<p th:text="${studyGroup.leader}"></p>
-														부방장이 있을 때만 표시
-														<div th:if="${studyGroup.subLeader != null}">
-															부방장 <i class="fas fa-star text-primary"></i>
-															<p th:text="${studyGroup.subLeader}"></p>
-														</div>
-													</div>
-												</div>
-												
-												<div>멤버 수 <p th:text="${studyGroup.memberCount}"></p></div>
-												<div>최대 멤버 수 <p th:text="${studyGroup.maxMembers}"></p></div>
-
-											</div> -->
 											<div id="study" class="content-section d-none">
 												<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
 												<hr>
@@ -262,14 +241,15 @@
 												<h3 class="fw-bold">스터디 삭제</h3>
 												<hr>
 												<div class="text-center">
-												<div style="color: #ffc107;">
-													<i class="bi bi-exclamation-triangle-fill" style="font-size: 3rem;"></i>
-												</div>
-												<p>
-													스터디 그룹을 삭제하면 기존의 데이터들이 다 삭제 됩니다.<br>스터디 그룹을 삭제하기를
-													원하시면 아래의 버튼을 눌러주세요.
-												</p>
-												<button id="deleteStudyBtn" class="btn btn-danger">삭제하기</button>
+													<div style="color: #ffc107;">
+														<i class="bi bi-exclamation-triangle-fill"
+															style="font-size: 3rem;"></i>
+													</div>
+													<p>
+														스터디 그룹을 삭제하면 기존의 데이터들이 다 삭제 됩니다.<br>스터디 그룹을 삭제하기를
+														원하시면 아래의 버튼을 눌러주세요.
+													</p>
+													<button id="deleteStudyBtn" class="btn btn-danger">삭제하기</button>
 												</div>
 											</div>
 										</div>

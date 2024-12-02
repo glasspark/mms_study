@@ -49,22 +49,11 @@ $(document).ready(function() {
 			getBoardList();
 		}
 
-
-
 		// If the schedule section is clicked, adjust the calendar size
 		if (target === 'schedule') {
+			calendar.updateSize(); // 크기 재계산
 			getApplicationLists(); //일정 리스트
 
-			// Adjust the height of the calendar and update the size
-			$('#calendar').css({
-				height: '100%',
-				width: '100%'
-			});
-
-			// Ensure that FullCalendar recalculates its dimensions
-			/*		if (window.calendar) {
-						window.calendar.updateSize();
-					}*/
 		}
 
 	});
@@ -73,12 +62,12 @@ $(document).ready(function() {
 	$('#deleteStudyBtn').click(function() {
 		let num = $('#groupId').val();
 		$.ajax({
-		 url: '/api/group/detail/study?groupId=' + num, 
+			url: '/api/group/detail/study?groupId=' + num,
 			type: 'DELETE',
 			success: function(response) {
 				if (response.status === 'success') {
 					alert(response.message);
-				  window.location.href = '/mystudy'; 
+					window.location.href = '/mystudy';
 				} else {
 					alert(response.message);
 				}
@@ -126,8 +115,11 @@ $(document).ready(function() {
 		});
 	});
 
+
+	//presentation , fc-scrollgrid-sync-table
 	var calendarEl = $('#calendar')[0];  // jQuery로 요소를 선택하고 DOM 요소를 가져옵니다.
 	var calendar = new FullCalendar.Calendar(calendarEl, {
+		//	contentHeight: 450,
 		initialView: 'dayGridMonth',
 		headerToolbar: {
 			left: 'prev,next today',
@@ -149,7 +141,7 @@ $(document).ready(function() {
 					calendar.addEvent(savedEvent); // 서버 저장 후 캘린더 
 				});
 			}
-			calendar.unselect(); // 선택 해제
+			//	calendar.unselect(); // 선택 해제
 		},
 		datesSet: function(info) { // 날짜가 설정될 때마다 (뷰가 바뀔 때마다) 실행
 			//datesSet :  날짜가 설정될 때마다 (뷰가 바뀔 때마다) 실행
