@@ -8,10 +8,12 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.json.JSONObject;
 import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -174,6 +176,45 @@ public class StudyGroupDetailController {
 			@RequestParam Integer groupId, @RequestParam Integer boardId, HttpServletRequest req) {
 		return studyGroupDetailService.deleteStudyBoardDetail(principalDetail, groupId, boardId, req);
 	}
+
+	@ResponseBody
+	@PostMapping("/board/comment")
+	@Operation(summary = "스터디 그룹 게시판 글 댓글 작성 API", description = "스터디그룹 상세페이지에서 게시판 글 댓글을 작성하는 API")
+	public ResponseEntity<Map<String, Object>> saveBoardComment(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam String content,
+			@RequestParam Integer boardId) {
+		return studyGroupDetailService.createBoardComment(principalDetail, content, boardId);
+	}
+
+	@ResponseBody
+	@PatchMapping("/board/comment")
+	@Operation(summary = "스터디 그룹 게시판 글 댓글 수정 API", description = "스터디그룹 상세페이지에서 게시판 글 댓글을 수정하는 API")
+	public ResponseEntity<Map<String, Object>> patchBoardComment(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam String content,
+			@RequestParam Integer commentId) {
+		return studyGroupDetailService.updateBoardComment(principalDetail, content, commentId);
+	}
+
+	@ResponseBody
+	@DeleteMapping("/board/comment")
+	@Operation(summary = "스터디 그룹 게시판 글 댓글 삭제 API", description = "스터디그룹 상세페이지에서 게시판 글 댓글을 삭제하는 API")
+	public ResponseEntity<Map<String, Object>> deleteBoardComment(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam Integer commentId) {
+		return studyGroupDetailService.deleteBoardComment(principalDetail, commentId);
+	}
+
+//	@ResponseBody
+//	@PostMapping("/board/reply")
+//	@Operation(summary = "스터디 그룹 게시판 글 댓글 작성 API", description = "스터디그룹 상세페이지에서 게시판 글 댓글을 작성하는 API")
+//	public ResponseEntity<Map<String, Object>> saveBoardComment(
+//			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam String content,
+//			@RequestParam Integer boardId) {
+//		return studyGroupDetailService.createBoardComment(principalDetail, content, boardId);
+//	}
+//	
+	
+	
+	
 	
 	@ResponseBody
 	@DeleteMapping("/study")

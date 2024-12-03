@@ -75,4 +75,8 @@ public class BoardComment {
 		this.studyBoard = studyBoard;
 	}
 
+	public void update(String content) {
+		this.content = content;
+	}
+
 }

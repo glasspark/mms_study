@@ -13,6 +13,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.AccessDeniedException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +22,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.constants.ErrorCode;
+import com.study.mms.constants.SuccessCode;
 import com.study.mms.dto.ReponseJoinDTO;
 import com.study.mms.dto.ScheduleDTO;
 import com.study.mms.dto.StudyBoardDTO;
@@ -43,6 +46,7 @@ import com.study.mms.repository.StudyGroupRepository;
 import com.study.mms.repository.UploadedFileRepository;
 import com.study.mms.repository.UserRepository;
 import com.study.mms.util.ImageUploader;
+import com.study.mms.util.ResponseUtil;
 
 import lombok.RequiredArgsConstructor;
 
@@ -833,9 +837,27 @@ public class StudyGroupDetailService {
 		return returnMap;
 	}
 
-	// 스터디 그룹 게시판 생성
+	// 스터디 그룹 게시글 댓굴, 답글 생성 길이 유효성
+
+	private void validateCommentLength(String content) {
+		final int MAX_COMMENT_LENGTH = 1000;
+		if (content == null || content.trim().isEmpty()) {
+			throw new CustomException(ErrorCode.CONTENT_EMPTY);
+		}
+
+		if (content.length() > MAX_COMMENT_LENGTH) {
+			throw new CustomException(ErrorCode.CONTENT_TOO_LONG);
+		}
+
+	}
+
+	// 스터디 그룹 게시판 댓글 생성
 	@Transactional
-	public Map<String, Object> saveBoardComment(PrincipalDetail principalDetail, String content, Integer boardId) {
+	public ResponseEntity<Map<String, Object>> createBoardComment(PrincipalDetail principalDetail, String content,
+			Integer boardId) {
+
+		// 유효성 검사
+		validateCommentLength(content);
 
 		User user = principalDetail.getUser();
 
@@ -845,10 +867,70 @@ public class StudyGroupDetailService {
 
 		BoardComment boardComment = BoardComment.builder().content(content).user(user).studyBoard(studyBoard).build();
 		boardCommentRepository.save(boardComment);
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.CREATED, SuccessCode.DATA_CREATED.getMessage());
+	}
 
-		
-		
-		return null;
+	// 스터디 그룹 게시판 댓글 업데이트
+	@Transactional // Transactional 에너테이션이 존재 해야지 .save(data) 하지 않아도 수정 가능
+	public ResponseEntity<Map<String, Object>> updateBoardComment(PrincipalDetail principalDetail, String content,
+			Integer commentId) {
+		validateCommentLength(content);
+
+		User user = principalDetail.getUser();
+
+		BoardComment boardComment = boardCommentRepository.findById(commentId)
+				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+		// 작성자와 일치하지 않는 경우 예외 던지기
+		if (!user.getId().equals(boardComment.getUser().getId())) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+		// 댓글 내용 수정
+		boardComment.update(content);
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_CREATED.getMessage());
+	}
+
+	// 스터디 그룹 게시판 댓글 삭제
+	@Transactional
+	public ResponseEntity<Map<String, Object>> deleteBoardComment(PrincipalDetail principalDetail, Integer commentId) {
+
+		User user = principalDetail.getUser();
+
+		BoardComment boardComment = boardCommentRepository.findById(commentId)
+				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+		// 작성자와 일치하지 않는 경우 예외 던지기
+		if (!user.getId().equals(boardComment.getUser().getId())) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+		// 댓글 내용 수정
+		boardCommentRepository.delete(boardComment);
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
+	}
+
+	// 스터디 그룹 게시판 답댓글 등록(수정 중)
+	@Transactional
+	public ResponseEntity<Map<String, Object>> createBoardReply(PrincipalDetail principalDetail, Integer commentId,
+			String content) {
+
+		validateCommentLength(content);
+
+		User user = principalDetail.getUser();
+
+		BoardComment boardComment = boardCommentRepository.findById(commentId)
+				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+		// 작성자와 일치하지 않는 경우 예외 던지기
+		if (!user.getId().equals(boardComment.getUser().getId())) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+		// 댓글 내용 수정
+		boardCommentRepository.delete(boardComment);
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
 	}
 
 }
