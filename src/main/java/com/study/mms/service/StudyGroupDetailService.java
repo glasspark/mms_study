@@ -30,6 +30,7 @@ import com.study.mms.dto.StudyGroupMemberDTO;
 import com.study.mms.dto.UploadedFileDTO;
 import com.study.mms.exception.CustomException;
 import com.study.mms.model.BoardComment;
+import com.study.mms.model.BoardReply;
 import com.study.mms.model.GroupSchedule;
 import com.study.mms.model.StudyBoard;
 import com.study.mms.model.StudyGroup;
@@ -38,6 +39,7 @@ import com.study.mms.model.StudyGroupMember;
 import com.study.mms.model.UploadedFile;
 import com.study.mms.model.User;
 import com.study.mms.repository.BoardCommentRepository;
+import com.study.mms.repository.BoardReplyRepository;
 import com.study.mms.repository.GroupScheduleRepository;
 import com.study.mms.repository.StudyBoardRepository;
 import com.study.mms.repository.StudyGroupJoinRequestRepository;
@@ -63,6 +65,7 @@ public class StudyGroupDetailService {
 	private final StudyBoardRepository studyBoardRepository;
 	private final StudyGroupService studyGroupService;
 	private final BoardCommentRepository boardCommentRepository;
+	private final BoardReplyRepository boardReplyRepository;
 
 	@Transactional
 	public Map<String, Object> test(PrincipalDetail principalDetail) {
@@ -911,11 +914,38 @@ public class StudyGroupDetailService {
 		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
 	}
 
-	// 스터디 그룹 게시판 답댓글 등록(수정 중)
+	// 스터디 그룹 게시판 답댓글 등록
 	@Transactional
 	public ResponseEntity<Map<String, Object>> createBoardReply(PrincipalDetail principalDetail, Integer commentId,
 			String content) {
 
+		// 해당 스터디에 가입이 되어져 있으면서 스터디 게시글에 이 댓글이 있는지 확인하는 유효성 검사 필요
+		User user = principalDetail.getUser();
+
+		validateCommentLength(content);
+		// 댓글 존재 여부 확인
+		BoardComment boardComment = boardCommentRepository.findById(commentId)
+				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+		// 해당 댓글이 속한 게시판이 있는 스터디 그룹에 가입되어 있는지 확인
+		StudyGroup studyGroup = boardComment.getStudyBoard().getStudyGroup();
+		boolean isMember = studyGroupMemberRepository.existsByStudyGroupAndUser(studyGroup, user);
+		if (!isMember) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+
+		// 답댓글 객체 생성 (빌더 패턴 사용)
+		BoardReply boardReply = BoardReply.builder().content(content).user(user).boardComment(boardComment).build();
+		boardReplyRepository.save(boardReply);
+
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_CREATED.getMessage());
+	}
+
+	// 스터디 그룹 게시판 답글 업데이트
+	@Transactional // Transactional 에너테이션이 존재 해야지 .save(data) 하지 않아도 수정 가능
+	public ResponseEntity<Map<String, Object>> updateBoardReply(PrincipalDetail principalDetail, String content,
+			Integer replyId, Integer commentId) {
 		validateCommentLength(content);
 
 		User user = principalDetail.getUser();
@@ -923,12 +953,48 @@ public class StudyGroupDetailService {
 		BoardComment boardComment = boardCommentRepository.findById(commentId)
 				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
 
-		// 작성자와 일치하지 않는 경우 예외 던지기
-		if (!user.getId().equals(boardComment.getUser().getId())) {
+		// 답글 존재 여부 확인 및 해당 댓글에 속하는지 확인
+		BoardReply boardReply = boardReplyRepository.findById(replyId)
+				.orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
+
+		// 답글이 해당 댓글에 속해 있는지 확인
+		if (!boardReply.getBoardComment().getId().equals(boardComment.getId())) {
+			throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+		}
+		// 작성자 확인 - 답글의 작성자와 현재 사용자가 일치하지 않을 경우 예외 던짐
+		if (!boardReply.getUser().getId().equals(user.getId())) {
 			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
 		}
+
 		// 댓글 내용 수정
-		boardCommentRepository.delete(boardComment);
+		boardReply.update(content);
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_UPDATE.getMessage());
+	}
+
+	// 스터디 그룹 게시판 댓글 삭제
+	@Transactional
+	public ResponseEntity<Map<String, Object>> deleteBoardReply(PrincipalDetail principalDetail, Integer replyId,
+			Integer commentId) {
+
+		User user = principalDetail.getUser();
+		BoardComment boardComment = boardCommentRepository.findById(commentId)
+				.orElseThrow(() -> new CustomException(ErrorCode.COMMENT_NOT_FOUND));
+
+		// 답글 존재 여부 확인 및 해당 댓글에 속하는지 확인
+		BoardReply boardReply = boardReplyRepository.findById(replyId)
+				.orElseThrow(() -> new CustomException(ErrorCode.REPLY_NOT_FOUND));
+
+		// 답글이 해당 댓글에 속해 있는지 확인
+		if (!boardReply.getBoardComment().getId().equals(boardComment.getId())) {
+			throw new CustomException(ErrorCode.DATA_NOT_FOUND);
+		}
+		// 작성자 확인 - 답글의 작성자와 현재 사용자가 일치하지 않을 경우 예외 던짐
+		if (!boardReply.getUser().getId().equals(user.getId())) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+		// 답글 삭제
+		boardReplyRepository.delete(boardReply);
 		// 성공 응답 생성
 		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
 	}

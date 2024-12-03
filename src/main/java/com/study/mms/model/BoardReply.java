@@ -20,6 +20,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 
@@ -60,5 +61,16 @@ public class BoardReply {
 	@JoinColumn(name = "study_comment_id")
 	@Comment("스터디 그룹 게시판 댓글")
 	private BoardComment boardComment;
+
+	@Builder
+	public BoardReply(String content, User user, BoardComment boardComment) {
+		this.content = content;
+		this.user = user;
+		this.boardComment = boardComment;
+	}
+
+	public void update(String content) {
+		this.content = content;
+	}
 
 }

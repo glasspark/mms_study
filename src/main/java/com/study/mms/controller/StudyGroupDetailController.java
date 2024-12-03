@@ -203,19 +203,33 @@ public class StudyGroupDetailController {
 		return studyGroupDetailService.deleteBoardComment(principalDetail, commentId);
 	}
 
-//	@ResponseBody
-//	@PostMapping("/board/reply")
-//	@Operation(summary = "스터디 그룹 게시판 글 댓글 작성 API", description = "스터디그룹 상세페이지에서 게시판 글 댓글을 작성하는 API")
-//	public ResponseEntity<Map<String, Object>> saveBoardComment(
-//			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam String content,
-//			@RequestParam Integer boardId) {
-//		return studyGroupDetailService.createBoardComment(principalDetail, content, boardId);
-//	}
-//	
-	
-	
-	
-	
+	@ResponseBody
+	@PostMapping("/board/reply")
+	@Operation(summary = "스터디 그룹 게시판 글 답글 작성 API", description = "스터디그룹 상세페이지에서 게시판 답글을 작성하는 API")
+	public ResponseEntity<Map<String, Object>> saveBoardComment(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam Integer commentId,
+			@RequestParam String content) {
+		return studyGroupDetailService.createBoardReply(principalDetail, commentId, content);
+	}
+
+	@ResponseBody
+	@PatchMapping("/board/reply")
+	@Operation(summary = "스터디 그룹 게시판 글 답글 수정 API", description = "스터디그룹 상세페이지에서 게시판 답글을 수정하는 API")
+	public ResponseEntity<Map<String, Object>> updateBoardReply(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam String content,
+			@RequestParam Integer replyId, @RequestParam Integer commentId) {
+		return studyGroupDetailService.updateBoardReply(principalDetail, content, replyId, commentId);
+	}
+
+	@ResponseBody
+	@DeleteMapping("/board/reply")
+	@Operation(summary = "스터디 그룹 게시판 글 답글 삭제 API", description = "스터디그룹 상세페이지에서 게시판 답글을 삭제하는 API")
+	public ResponseEntity<Map<String, Object>> deleteBoardReply(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam Integer replyId,
+			@RequestParam Integer commentId) {
+		return studyGroupDetailService.deleteBoardReply(principalDetail, replyId, commentId);
+	}
+
 	@ResponseBody
 	@DeleteMapping("/study")
 	@Operation(summary = "스터디 그룹 삭제 API", description = "스터디그룹 상세페이지에서 방장이 스터디 그룹을 삭제하는 API")
