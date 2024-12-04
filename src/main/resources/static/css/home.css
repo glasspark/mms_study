@@ -1,0 +1,13 @@
+.nav-link {
+    font-weight: bold; /* 글자 굵게 */
+    color: #007bff; /* 기본 링크 색상 설정 (파란색 계열) */
+    text-decoration: none; /* 밑줄 제거 */
+}
+
+.nav-link:hover {
+    color: #0056b3; /* 마우스를 올렸을 때 색상 변경 (좀 더 진한 파란색) */
+}
+
+.nav-link.active {
+    color: #ff6347; /* 활성화된 링크 (active) 색상 설정 (토마토 색상) */
+}

@@ -205,4 +205,10 @@ public class MainController {
 	public String inquiry() {
 		return "inquiry";
 	}
+	
+	// 공지사항
+	@GetMapping("/notice")
+	public String notice() {
+		return "notice";
+	}
 }

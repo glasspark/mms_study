@@ -21,7 +21,7 @@
 	rel="stylesheet" />
 <!-- Core theme CSS (includes Bootstrap)-->
 <link href="css/styles.css" rel="stylesheet" />
-<link href="css/home.css" rel="stylesheet" />
+<!-- <link href="css/notice.css" rel="stylesheet" /> -->
 <!-- 제이쿼리 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Bootstrap core JS-->
@@ -34,46 +34,43 @@
 		<nav th:replace="~{navbar :: navbarFragment}"></nav>
 
 		<!-- 공지 사항 -->
-		<!-- 		<div class="text-center mb-3">
-			<h1 class="display-5 fw-bolder mb-0">
-				<span class="text-gradient d-inline">Resume</span>
-			</h1>
-		</div> -->
+		<div class="text-center mb-3 mt-3">
+			<h4 class="display-5 fw-bolder mb-0">
+				<span class="text-gradient d-inline">공지사항</span>
+			</h4>
+		</div>
 
 		<!-- content -->
-		<div class="container px-0 my-3">
+		<div class="container px-0 my-0">
 			<div class="row gx-5 justify-content-center">
-				<div class="col-lg-14 col-xl-12 col-xxl-11">
-
-					<!-- Skills Section-->
+				<div class="col-lg-13 col-xl-11 col-xxl-10">
+					<!-- 공지 사항 -->
+					<!-- 		<div class="text-center mb-3">
+							<h1 class="display-5 fw-bolder mb-0">
+								<span class="text-gradient d-inline">Resume</span>
+							</h1>
+								</div> -->
+					<!-- Skills Section-->				
 					<section>
 
-						<!-- Skillset Card-->
-						<div class="d-flex">
-
-							<!-- Sidebar Navigation -->
-							<nav th:replace="~{navbar :: homeNavbarFragment}"></nav>
-
-
-							<!-- Card Content -->
-							<div class="card border-0 rounded-4 mb-5 flex-grow-1">
-								<div class="card-body p-4">
-									<!-- Professional skills list-->
-									<div class="mb-5">
-										<div class="d-flex align-items-center mb-4">
-											<div
-												class="feature bg-primary bg-gradient-primary-to-secondary text-white rounded-3 me-3">
-												<i class="bi bi-tools"></i>
-											</div>
-											<h3 class="fw-bolder mb-0">
-												<span class="text-gradient d-inline">Professional
-													Skills</span>
-											</h3>
+						<!-- Card Content -->
+						<div class="card border-0 rounded-4 mb-5 flex-grow-1">
+							<div class="card-body p-4">
+								<!-- Professional skills list-->
+								<div class="mb-5">
+									<div class="d-flex align-items-center mb-4">
+										<div
+											class="feature bg-primary bg-gradient-primary-to-secondary text-white rounded-3 me-3">
+											<i class="bi bi-tools"></i>
 										</div>
-										<!-- Skills list or content here -->
-										<p>Include your skills details here, such as programming
-											languages, tools, or soft skills.</p>
+										<h3 class="fw-bolder mb-0">
+											<span class="text-gradient d-inline">Professional
+												Skills</span>
+										</h3>
 									</div>
+									<!-- Skills list or content here -->
+									<p>Include your skills details here, such as programming
+										languages, tools, or soft skills.</p>
 								</div>
 							</div>
 						</div>
