@@ -23,6 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.constants.ErrorCode;
 import com.study.mms.constants.SuccessCode;
+import com.study.mms.dto.BoardCommentWithRepliesDTO;
 import com.study.mms.dto.ReponseJoinDTO;
 import com.study.mms.dto.ScheduleDTO;
 import com.study.mms.dto.StudyBoardDTO;
@@ -997,6 +998,46 @@ public class StudyGroupDetailService {
 		boardReplyRepository.delete(boardReply);
 		// 성공 응답 생성
 		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
+	}
+
+	// 스터디 댓글, 답글 리소스 반환
+	@Transactional
+	public ResponseEntity<Map<String, Object>> getCommentsAndRepliesByBoardId(PrincipalDetail principalDetail,
+			Integer boardId) {
+
+		User user = principalDetail.getUser();
+		// 스터디 그룹 내 게시판 조회
+		StudyBoard studyBoard = studyBoardRepository.findById(boardId)
+				.orElseThrow(() -> new CustomException(ErrorCode.BOARD_NOT_FOUND));
+
+		// 작성자 확인 - 답글의 작성자와 현재 사용자가 일치하지 않을 경우 예외 던짐
+		if (!studyBoard.getUser().getId().equals(user.getId())) {
+			throw new CustomException(ErrorCode.USER_NOT_FORBIDDN);
+		}
+
+		// 게시판의 댓글 리스트 조회
+		List<BoardComment> comments = boardCommentRepository.findAllByStudyBoard(studyBoard);
+
+		// 댓글 및 답글 데이터를 DTO로 변환
+		List<BoardCommentWithRepliesDTO> commentWithRepliesDTOList = comments.stream().map(comment -> {
+			List<BoardCommentWithRepliesDTO.ReplyDTO> replyDTOList = comment.getBoardReplies().stream()
+					.map(reply -> BoardCommentWithRepliesDTO.ReplyDTO.builder().replyId(reply.getId())
+							.content(reply.getContent()).author(reply.getUser().getNickname())
+							.isAuthor(reply.getUser().getId().equals(user.getId())).createdAt(reply.getCreatedAt())
+							.imgPath(reply.getUser().getImg_path())
+							.build())
+					.collect(Collectors.toList());
+
+			return BoardCommentWithRepliesDTO.builder().commentId(comment.getId()).content(comment.getContent())
+					.author(comment.getUser().getNickname()).createdAt(comment.getCreatedAt()).replies(replyDTOList)
+					.isAuthor(comment.getUser().getId().equals(user.getId()))
+					.imgPath(comment.getUser().getImg_path())
+					.build();
+		}).collect(Collectors.toList());
+
+		// 성공 응답 생성
+		return ResponseUtil.buildSuccessResponseWithData(HttpStatus.OK, SuccessCode.DATA_FETCHED.getMessage(),
+				commentWithRepliesDTOList);
 	}
 
 }

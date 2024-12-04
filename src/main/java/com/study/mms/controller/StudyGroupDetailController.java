@@ -231,6 +231,14 @@ public class StudyGroupDetailController {
 	}
 
 	@ResponseBody
+	@GetMapping("/board/comment")
+	@Operation(summary = "스터디 그룹 게시판 댓글, 답글 리스트 반환 API", description = "스터디그룹 상세페이지에서 게시판 댓글과 답글 리스트를 가져오는 API")
+	public ResponseEntity<Map<String, Object>> getCommentsAndRepliesByBoardId(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @RequestParam Integer boardId) {
+		return studyGroupDetailService.getCommentsAndRepliesByBoardId(principalDetail, boardId);
+	}
+
+	@ResponseBody
 	@DeleteMapping("/study")
 	@Operation(summary = "스터디 그룹 삭제 API", description = "스터디그룹 상세페이지에서 방장이 스터디 그룹을 삭제하는 API")
 	public Map<String, Object> deleteStudDetail(@AuthenticationPrincipal PrincipalDetail principalDetail,
