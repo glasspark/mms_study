@@ -52,7 +52,7 @@ public class Notice {
 	@Comment("내용")
 	private String content;
 
-	@Column(name = "img")
+	@Column(name = "img", nullable = true)
 	@Comment("이미지")
 	private String img;
 
@@ -60,7 +60,7 @@ public class Notice {
 	@Comment("상단 고정 여부")
 	private Boolean isPinned = false; // 상단 고정 여부
 
-	@Column(name = "priority", nullable = false)
+	@Column(name = "priority", nullable = true)
 	@Comment("우선순위")
 	private Integer priority; //상단 고정 우선순위
 

@@ -13,7 +13,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.study.mms.auth.PrincipalDetail;
+import com.study.mms.dto.NoticeDTO;
 import com.study.mms.dto.StudyGroupDTO;
+import com.study.mms.service.AdminNoticeService;
 import com.study.mms.service.AdminStudyGroupService;
 
 import lombok.RequiredArgsConstructor;
@@ -24,6 +26,7 @@ import lombok.RequiredArgsConstructor;
 public class AdminMainController {
 
 	private final AdminStudyGroupService adminStudyGroupService;
+	private final AdminNoticeService adminNoticeService;
 
 	// 관리자 메인 페이지
 	@GetMapping({ "/dashboard", "" })
@@ -88,6 +91,25 @@ public class AdminMainController {
 	@GetMapping("/studyGroups")
 	public String adminStudyGroupsBoard(@AuthenticationPrincipal PrincipalDetail principalDetai) {
 		return "admin/studyGroups";
+	}
+
+	// 공지사항
+	@GetMapping("/notice")
+	public String adminNotice(@AuthenticationPrincipal PrincipalDetail principalDetai) {
+		return "admin/notice";
+	}
+
+	// 공지사항 등록, 수정
+	@GetMapping("/notice/form")
+	public String adminNoticeForm(@AuthenticationPrincipal PrincipalDetail principalDetai,
+			@RequestParam(value = "id", required = false) Integer noticeId, Model model) {
+
+		if (noticeId != null) {
+			NoticeDTO notice = adminNoticeService.getNotice(principalDetai, noticeId);
+			model.addAttribute("notice", notice);
+		} 
+
+		return "admin/noticeForm";
 	}
 
 }

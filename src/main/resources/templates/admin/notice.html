@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+<meta name="viewport"
+	content="width=device-width, initial-scale=1, shrink-to-fit=no" />
+<meta name="description" content="" />
+<meta name="author" content="" />
+<title>MMS - 관리자</title>
+<link href="/css/admin/styles.css" rel="stylesheet" />
+<link href="/css/admin/faq.css" rel="stylesheet" />
+<script src="https://use.fontawesome.com/releases/v6.3.0/js/all.js"
+	crossorigin="anonymous"></script>
+<script
+	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"
+	crossorigin="anonymous"></script>
+<script src="/js/admin/datatables-simple-demo.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<!-- Moment.js -->
+<script src="https://cdn.jsdelivr.net/momentjs/latest/moment.min.js"></script>
+<!-- Date Range Picker CSS -->
+<link rel="stylesheet"
+	href="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.css" />
+<!-- Date Range Picker JavaScript -->
+<script
+	src="https://cdn.jsdelivr.net/npm/daterangepicker/daterangepicker.min.js"></script>
+<script src="/js/admin/scripts.js"></script>
+<script src="/js/admin/notice.js"></script>
+
+<style>
+#modalContent img {
+	max-width: 100%; /* 이미지가 컨테이너를 벗어나지 않도록 설정 */
+	height: auto; /* 이미지 비율 유지 */
+	display: block; /* 인라인 요소를 차단하고 블록 요소로 처리 */
+	margin: 0 auto; /* 필요 시 중앙 정렬 */
+}
+</style>
+</head>
+<body class="sb-nav-fixed">
+	<!-- 네비게이션바 -->
+	<nav th:replace="~{admin/navbar :: adminNavbarFragment}"></nav>
+	<div id="layoutSidenav">
+		<div id="layoutSidenav_nav">
+			<!-- 사이드 네비게이션바 -->
+			<nav th:replace="~{admin/sideNavbar :: adminSideNavbarFragment}"></nav>
+		</div>
+		<div id="layoutSidenav_content">
+			<main>
+
+				<!-- Notice Modal -->
+				<div class="modal fade" id="noticeModal" tabindex="-1"
+					aria-labelledby="noticeModalLabel" aria-hidden="true">
+					<div class="modal-dialog modal-lg">
+						<div class="modal-content">
+							<div class="modal-header">
+								<h5 class="modal-title" id="noticeModalLabel">공지사항 상세</h5>
+								<button type="button" class="btn-close" data-bs-dismiss="modal"
+									aria-label="Close"></button>
+							</div>
+							<div class="modal-body">
+								<h5 id="modalTitle"></h5>
+								<p id="modalContent"></p>
+								<small id="modalCreatedAt"></small>
+								<div id="modalPinned"></div>
+							</div>
+							<div class="modal-footer">
+								<!-- 			<button type="button" class="btn btn-secondary"
+									data-bs-dismiss="modal">닫기</button> -->
+								<button type="button" class="btn btn-primary edit-button">수정</button>
+								<button type="button" class="btn btn-danger delete-button">삭제</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+
+
+				<div class="container-fluid px-4">
+					<!-- title -->
+					<div
+						class="d-flex justify-content-between align-items-center mt-4 mb-2">
+						<h2>공지사항 관리</h2>
+						<button class="btn btn-primary" id="addNotice">등록하기</button>
+					</div>
+					<!-- content -->
+					<section>
+						<!-- 공지사항 리스트 -->
+						<div id="noticeList" class="list-group">
+							<!-- 공지사항 항목들이 동적으로 추가될 영역 -->
+						</div>
+
+						<!-- 페이징 -->
+						<nav aria-label="Page navigation">
+							<ul class="pagination justify-content-center mt-4"
+								id="pagination">
+								<!-- 페이징 버튼들이 동적으로 추가될 영역 -->
+							</ul>
+						</nav>
+					</section>
+				</div>
+			</main>
+
+		</div>
+	</div>
+
+</body>
+</html>

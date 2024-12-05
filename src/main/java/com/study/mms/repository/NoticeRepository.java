@@ -1,5 +1,7 @@
 package com.study.mms.repository;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
@@ -21,4 +23,8 @@ public interface NoticeRepository extends JpaRepository<Notice, Integer> {
 	@Modifying
 	@Query("UPDATE Notice n SET n.priority = n.priority - 1 WHERE n.priority > :priority AND n.isPinned = true")
 	void decrementPrioritiesAfter(Integer priority);
+	
+    // 공지사항 페이징 조회
+    @Query("SELECT n FROM Notice n ORDER BY n.isPinned DESC, n.priority ASC NULLS LAST, n.createdAt DESC")
+    Page<Notice> findAllNotices(Pageable pageable);
 }

@@ -9,7 +9,7 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PatchMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -33,25 +33,34 @@ public class AdminNoticeController {
 	@ResponseBody
 	@PostMapping("/nocite")
 	@Operation(summary = "공지사항 생성, 수정 API", description = "관리자 페이지 공지사항 생성, 수정 API")
-	public ResponseEntity<Map<String, Object>> createAndUpdateNotice(@AuthenticationPrincipal PrincipalDetail principalDetail,
-			@ModelAttribute NoticeDTO noticeDTO, HttpServletRequest req) {
+	public ResponseEntity<Map<String, Object>> createAndUpdateNotice(
+			@AuthenticationPrincipal PrincipalDetail principalDetail, @ModelAttribute NoticeDTO noticeDTO,
+			HttpServletRequest req) {
 		return adminNoticeServicel.createAndUpdateNotice(principalDetail, noticeDTO, req);
 	}
 
 	@ResponseBody
-	@DeleteMapping("/nocite")
+	@DeleteMapping("/nocite/{noticeId}")
 	@Operation(summary = "공지사항 삭제", description = "관리자 페이지 공지사항 삭제 API")
 	public ResponseEntity<Map<String, Object>> deleteNotice(@AuthenticationPrincipal PrincipalDetail principalDetail,
-			@RequestParam Integer noticeId, HttpServletRequest req) {
+			@PathVariable Integer noticeId, HttpServletRequest req) {
 		return adminNoticeServicel.deleteNotice(principalDetail, noticeId, req);
 	}
 
 	@ResponseBody
 	@GetMapping("/nocite")
 	@Operation(summary = "공지사항 리스트 반환", description = "관리자 페이지 공지사항 리스트 반환 API")
-	public ResponseEntity<Map<String, Object>> getNoticeList(@AuthenticationPrincipal PrincipalDetail principalDetail
-		 ) {
-		return adminNoticeServicel.getNoticeList(principalDetail);
+	public ResponseEntity<Map<String, Object>> getNoticeList(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@RequestParam(value = "page", defaultValue = "0") Integer page) {
+		return adminNoticeServicel.getNoticeList(principalDetail, page);
+	}
+
+	@ResponseBody
+	@GetMapping("/nocite/{id}")
+	@Operation(summary = "공지사항 단일 데이터 반환", description = "관리자 페이지 공지사항 단일 데이터 반환 API")
+	public NoticeDTO getNotice(@AuthenticationPrincipal PrincipalDetail principalDetail,
+			@PathVariable("id") Integer noticeId) {
+		return adminNoticeServicel.getNotice(principalDetail, noticeId);
 	}
 
 }

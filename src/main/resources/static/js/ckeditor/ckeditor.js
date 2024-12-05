@@ -32,7 +32,6 @@ $(function() {
 				console.log(key + ": " + value);
 			});*/
 
-		console.log(adminBoardType);
 
 		$.ajax({
 			type: "POST",
@@ -67,5 +66,7 @@ $(function() {
 			editorWrite.setData(''); // CKEditor 내용 초기화
 		}
 	}
+
+
 
 });
