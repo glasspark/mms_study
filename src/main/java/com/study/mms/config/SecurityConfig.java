@@ -58,10 +58,11 @@ public class SecurityConfig {
 		http.csrf().disable()
 				.authorizeHttpRequests(auth -> auth
 						.antMatchers("/api/**", "/", "/css/**", "/js/**", "/img/**", "/join", "/swagger-ui/**",
-								"/v3/api-docs/**", "/swagger-resources/**", "/webjars/**","/error/**","/auth/**","/help/info/**")
+								"/v3/api-docs/**", "/swagger-resources/**", "/webjars/**", "/error/**", "/auth/**", 
+								"/**", "/help/info/**")
 						.permitAll() // 이 경로는 인증
 						.antMatchers("/admin/**").hasRole("ADMIN") // /admin/** 경로는 ROLE_ADMIN만 접근 가능
-						.anyRequest().authenticated()) //그 외 나머지는 접근 가능
+						.anyRequest().authenticated()) // 그 외 나머지는 접근 가능
 				.formLogin(login -> login.loginPage("/").loginProcessingUrl("/loginProc")
 						.defaultSuccessUrl("/home", false).usernameParameter("username").passwordParameter("password")
 						.successHandler(authenticationSuccessHandler).failureHandler(loginFailureHandler).permitAll())
@@ -80,9 +81,11 @@ public class SecurityConfig {
 						.authenticationEntryPoint((request, response, authException) -> {
 							response.sendRedirect("/?sessionExpired=true"); // 세션 만료 시 로그인 페이지로 리다이렉트
 						}))
-				.sessionManagement(sessionManagement -> sessionManagement.invalidSessionUrl("/?sessionExpired=true") // 세션 만료 시 리다이렉트
+				.sessionManagement(sessionManagement -> sessionManagement.invalidSessionUrl("/?sessionExpired=true") // 세션
+																														// 만료
+																														// 시
+																														// 리다이렉트
 				);
-
 		return http.build();
 	}
 

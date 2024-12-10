@@ -2,6 +2,8 @@ package com.study.mms.controller;
 
 import java.util.List;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -9,6 +11,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import com.study.mms.auth.PrincipalDetail;
@@ -29,15 +32,21 @@ public class MainController {
 	private final StudyGroupDetailService studyGroupDetailService;
 
 	// 메인페이지
-	@GetMapping("/")
-	public String root() {
-		return "index";
-	}
+//	@GetMapping("/")
+//	public String root() {
+//		return "index";
+//	}
 
-	// 로그인 페이지
-	@GetMapping("/login")
-	public String loginPage() {
-		return "login";
+	@GetMapping("/")
+	public String showLoginPage(HttpServletRequest request, Model model) {
+		// Flash Attribute 읽기
+		String loginFailMsg = (String) request.getSession().getAttribute("loginFailMsg");
+
+		if (loginFailMsg != null) {
+			model.addAttribute("loginFailMsg", loginFailMsg);
+			request.getSession().removeAttribute("loginFailMsg"); // 한 번 사용 후 삭제
+		}
+		return "index"; // login.html로 렌더링
 	}
 
 	// 로그인 후 홈페이지
@@ -205,7 +214,7 @@ public class MainController {
 	public String inquiry() {
 		return "inquiry";
 	}
-	
+
 	// 공지사항
 	@GetMapping("/notice")
 	public String notice() {
