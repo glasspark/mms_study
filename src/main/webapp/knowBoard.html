@@ -21,21 +21,13 @@
 	rel="stylesheet" />
 <!-- Core theme CSS (includes Bootstrap)-->
 <link href="css/styles.css" rel="stylesheet" />
-<!-- <link href="css/notice.css" rel="stylesheet" /> -->
+<link href="css/home.css" rel="stylesheet" />
 <!-- 제이쿼리 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <!-- Bootstrap core JS-->
 <script
 	src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.3/dist/js/bootstrap.bundle.min.js"></script>
-<script src="/js/notice.js"></script>
-<style>
-.accordion-body img {
-	max-width: 100%; /* 이미지가 컨테이너를 벗어나지 않도록 설정 */
-	height: auto; /* 이미지 비율 유지 */
-	display: block; /* 인라인 요소를 차단하고 블록 요소로 처리 */
-	margin: 0 auto; /* 필요 시 중앙 정렬 */
-}
-</style>
+	<script src="/js/boardCommon.js"></script>
 </head>
 <body class="d-flex flex-column h-100 bg-light">
 	<main class="flex-shrink-0">
@@ -43,29 +35,53 @@
 		<nav th:replace="~{navbar :: navbarFragment}"></nav>
 
 		<!-- 공지 사항 -->
-		<div class="text-center mb-3 mt-3">
-			<h4 class="display-5 fw-bolder mb-0">
-				<span class="text-gradient d-inline">공지사항</span>
-			</h4>
-		</div>
+		<!-- 		<div class="text-center mb-3">
+			<h1 class="display-5 fw-bolder mb-0">
+				<span class="text-gradient d-inline">Resume</span>
+			</h1>
+		</div> -->
 
 		<!-- content -->
-		<div class="container px-0 my-0">
+		<div class="container px-0 my-3">
 			<div class="row gx-5 justify-content-center">
-				<div class="col-lg-13 col-xl-11 col-xxl-10">
-					<!-- 공지 사항 -->
-					<!-- 		<div class="text-center mb-3">
-							<h1 class="display-5 fw-bolder mb-0">
-								<span class="text-gradient d-inline">Resume</span>
-							</h1>
-								</div> -->
+				<div class="col-lg-14 col-xl-12 col-xxl-11">
+
 					<!-- Skills Section-->
 					<section>
 
-						<!-- Card Content -->
-						<div class="card border-0 rounded-4 mb-5 flex-grow-1">
+						<!-- Skillset Card-->
+						<div class="d-flex board-knowledge">
+
+							<!-- Sidebar Navigation -->
+							<nav th:replace="~{navbar :: homeNavbarFragment}"></nav>
+
+
+							<!-- Card Content -->
+							<div class="card border-0 rounded-4 mb-5 flex-grow-1">
+								<div class="card-body p-4">
+									<!-- Professional skills list-->
+									<div class="mb-5">
+										<div class="d-flex align-items-center mb-4">
+											<div
+												class="feature bg-primary bg-gradient-primary-to-secondary text-white rounded-3 me-3">
+												<i class="bi bi-tools"></i>
+											</div>
+											<h3 class="fw-bolder mb-0">
+												<span class="text-gradient d-inline">Professional
+													Skills</span>
+											</h3>
+										</div>
+										<!-- Skills list or content here -->
+										<p>Include your skills details here, such as programming
+											languages, tools, or soft skills.</p>
+									</div>
+								</div>
+							</div>
+						</div>
+
+						<!-- 			<div class="card  border-0 rounded-4 mb-5">
 							<div class="card-body p-4">
-								<!-- Professional skills list-->
+								Professional skills list
 								<div class="mb-5">
 									<div class="d-flex align-items-center mb-4">
 										<div
@@ -77,18 +93,11 @@
 												Skills</span>
 										</h3>
 									</div>
-									<div id="noticeList" class="accordion"></div>
-								</div>
-							</div>
 
-							<!-- 페이징 -->
-							<nav aria-label="Page navigation">
-								<ul class="pagination justify-content-center mt-0"
-									id="pagination">
-									<!-- 페이징 버튼들이 동적으로 추가될 영역 -->
-								</ul>
-							</nav>
-						</div>
+								</div>
+
+							</div>
+						</div> -->
 					</section>
 				</div>
 			</div>

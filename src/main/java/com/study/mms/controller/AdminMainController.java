@@ -31,7 +31,7 @@ public class AdminMainController {
 	// 관리자 메인 페이지
 	@GetMapping({ "/dashboard", "" })
 	public String adminDashBoard(@AuthenticationPrincipal PrincipalDetail principalDetai) {
-		return "admin/dashboard";
+		return "/admin/dashboard";
 	}
 
 	// 관리자 스터디 신청 리스트

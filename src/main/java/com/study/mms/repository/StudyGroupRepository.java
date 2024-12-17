@@ -22,17 +22,31 @@ public interface StudyGroupRepository extends JpaRepository<StudyGroup, Integer>
 	boolean existsByName(String name);
 
 	// 관리자 페이지 검색 시 사용
-	@Query(value = """
-			SELECT * FROM study_group sg
-			WHERE (:status IS NULL OR sg.status = :status)
-			  AND (:name IS NULL OR LOWER(sg.name) LIKE LOWER(CONCAT('%', :name, '%')))
-			  AND (:startDate IS NULL OR sg.created_at >= :startDate)
-			  AND (:endDate IS NULL OR sg.created_at <= :endDate)
-			ORDER BY sg.created_at DESC
-			""", nativeQuery = true)
-	Page<StudyGroup> findByFilters(@Param("status") String status, @Param("name") String name,
-			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
+//	@Query(value = """
+//			SELECT * FROM study_group sg
+//			WHERE (:status IS NULL OR sg.status = :status)
+//			  AND (:name IS NULL OR LOWER(sg.name) LIKE LOWER(CONCAT('%', :name, '%')))
+//			  AND (:startDate IS NULL OR sg.created_at >= :startDate)
+//			  AND (:endDate IS NULL OR sg.created_at <= :endDate)
+//			ORDER BY sg.created_at DESC
+//			""", nativeQuery = true)
+//	Page<StudyGroup> findByFilters(@Param("status") String status, @Param("name") String name,
+//			@Param("startDate") LocalDateTime startDate, @Param("endDate") LocalDateTime endDate, Pageable pageable);
 
+	@Query(value = "SELECT * FROM study_group sg " +
+            "WHERE (:status IS NULL OR sg.status = :status) " +
+            "  AND (:name IS NULL OR LOWER(sg.name) LIKE LOWER(CONCAT('%', :name, '%'))) " +
+            "  AND (:startDate IS NULL OR sg.created_at >= :startDate) " +
+            "  AND (:endDate IS NULL OR sg.created_at <= :endDate) " +
+            "ORDER BY sg.created_at DESC",
+    nativeQuery = true)
+Page<StudyGroup> findByFilters(@Param("status") String status,
+                            @Param("name") String name,
+                            @Param("startDate") LocalDateTime startDate,
+                            @Param("endDate") LocalDateTime endDate,
+                            Pageable pageable);
+
+	
 	// 회원 스터디 그룹 조회 시 사용
 	@Query(value = "SELECT * FROM study_group sg WHERE sg.status = 'APPROVED' AND (:name IS NULL OR sg.name LIKE %:name%) AND (:status = 'all' OR sg.recruitment_status = :status) AND (:tag IS NULL OR :tag IS NULL OR sg.study_tag LIKE %:tag%) ORDER BY sg.approval_decision_at DESC", nativeQuery = true)
 	Page<StudyGroup> searchStudyGroups(@Param("name") String name, @Param("status") String status,

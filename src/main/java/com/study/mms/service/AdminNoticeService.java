@@ -159,7 +159,6 @@ public class AdminNoticeService {
 		if (notice.getIsPinned()) {
 			noticeRepository.decrementPrioritiesAfter(notice.getPriority());
 		}
-
 		noticeRepository.delete(notice);
 		return ResponseUtil.buildSuccessResponse(HttpStatus.OK, SuccessCode.DATA_DELETE.getMessage());
 	}

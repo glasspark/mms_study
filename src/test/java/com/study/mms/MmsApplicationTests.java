@@ -1,86 +1,130 @@
 package com.study.mms;
 
-import static org.mockito.Mockito.when;
-
-import java.util.Map;
-
+import com.study.mms.auth.PrincipalDetail;
+import com.study.mms.model.User;
+import com.study.mms.model.VisitCountLog;
+import com.study.mms.model.VisitorsLog;
+import com.study.mms.repository.UserRepository;
+import com.study.mms.repository.VisitCountLogRepository;
+import com.study.mms.repository.VisitorsLogRepository;
+import com.study.mms.service.LoginLogService;
+import com.study.mms.service.StudyGroupService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 
-import com.study.mms.auth.PrincipalDetail;
-import com.study.mms.dto.CreateInquiryDTO;
-import com.study.mms.dto.CreateStudyGroupDTO;
-import com.study.mms.model.User;
-import com.study.mms.repository.InquiryRepository;
-import com.study.mms.repository.StudyGroupRepository;
-import com.study.mms.repository.UserRepository;
-import com.study.mms.service.QnaService;
-import com.study.mms.service.StudyGroupService;
+import javax.transaction.Transactional;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.Optional;
+
+import static org.junit.Assert.assertTrue;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @SpringBootTest
+@Transactional
 class MmsApplicationTests {
 
-	@Autowired
-	private StudyGroupService studyGroupService;
+    @Mock
+    private Authentication authentication;
 
-	@Mock
-	private Authentication authentication;
+    @Mock
+    private PrincipalDetail principalDetail;
 
-	@Mock
-	private PrincipalDetail principalDetail;
+    @Mock
+    private UserRepository userRepository;
 
-	@Mock
-	private UserRepository userRepository;
+    @Mock
+    private VisitorsLogRepository visitorsLogRepository; // Mock Repository
+    @Mock
+    private  VisitCountLogRepository visitCountLogRepository;  //방문 횟수를 기록
 
-	@InjectMocks
-	private QnaService qnaService;
+    @InjectMocks
+    private LoginLogService loginLogService; // 테스트 대상 서비스
 
-	@Autowired
-	private InquiryRepository inquiryRepository;
+    private User specificUser;
 
-	@Mock
-	private StudyGroupRepository studyGroupRepository;
+    //@Mock => Mock 객체를 생성할 때 사용
+    //@InjectMocks => Mock 객체를 주입하여 테스트 대상 객체를 생성할 때 사용
+    //@Autowired => 의존성 주입
 
-	private User specificUser;
+    @BeforeEach
+    void setUp() {
+        MockitoAnnotations.openMocks(this);
+    }
 
-	@Test
-	void contextLoads() {
-	}
 
-	@BeforeEach
-	public void setup() {
-		MockitoAnnotations.openMocks(this);
+    @Test
+    void testAddVisitor_WhenNoExistingLog_SaveNewVisitor() {
+        // Given
+        String userId = "te8";
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
 
-		// 특정 사용자 생성 및 데이터베이스 저장
-		specificUser = new User();
-		specificUser.setUsername("te8");
-		specificUser.setPassword("Qwe123!@#");
-		specificUser = userRepository.save(specificUser); // 저장 후 다시 할당하여 영속성 적용
+        when(visitorsLogRepository.findByUserIdAndVisitedAtBetween(userId, startOfDay, endOfDay))
+                .thenReturn(Optional.empty()); // 방문 기록이 없는 상태
 
-		// Mock 설정
-		when(authentication.getPrincipal()).thenReturn(principalDetail);
-		when(principalDetail.getUser()).thenReturn(specificUser); // 특정 사용자 설정
+        // When
+        loginLogService.addVisitor(userId);
 
-	}
+        // Then
+        verify(visitorsLogRepository, times(1)).save(any(VisitorsLog.class)); // save 메서드가 호출되었는지 검증
+    }
 
-	@Test
-	public void createStudyGroupsForSpecificUser() {
-		for (int i = 31; i <= 80; i++) { // 예: 10개의 데이터 생성
-			CreateStudyGroupDTO groupDTO = new CreateStudyGroupDTO();
-			groupDTO.setName("StudyGroup " + i);
-			groupDTO.setDescription("Description for StudyGroup " + i);
-			groupDTO.setMaxMembers(10);
 
-			// 특정 사용자를 기반으로 스터디 그룹 생성
-			Map<String, Object> result = studyGroupService.createStudyGroup(authentication, groupDTO);
-			System.out.println("Created Group ID for specific user: " + result.get("groupId"));
-		}
-	}
+//	@BeforeEach
+//	public void setup() { //로그인 설정
+//		MockitoAnnotations.openMocks(this);
+//
+//		// 특정 사용자 생성 및 데이터베이스 저장
+//		specificUser = new User();
+//		specificUser.setUsername("te8");
+//		specificUser.setPassword("1234");
+//		specificUser = userRepository.save(specificUser); // 저장 후 다시 할당하여 영속성 적용
+//
+//		// Mock 설정
+//		when(authentication.getPrincipal()).thenReturn(principalDetail);
+//		when(principalDetail.getUser()).thenReturn(specificUser); // 특정 사용자 설정
+//
+//	}
+
+
+    @Test
+    void testAddVisitor_WhenLogExists_DoNotSave() {
+        // Given
+        String userId = "7";
+        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
+        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
+
+        VisitorsLog existingLog = VisitorsLog.builder().userId(userId).build();
+        when(visitorsLogRepository.findByUserIdAndVisitedAtBetween(userId, startOfDay, endOfDay))
+                .thenReturn(Optional.of(existingLog)); // 이미 방문 기록이 존재
+
+        // When
+        loginLogService.addVisitor(userId);
+
+        // Then
+        verify(visitorsLogRepository, never()).save(any(VisitorsLog.class)); // save 메서드가 호출되지 않아야 함
+    }
+
+    @Test
+    void testAddCount_SaveVisitCountLog() {
+        // Given
+        String userId = "user123";
+
+        // When
+        loginLogService.addCount(userId);
+
+        // Then
+        verify(visitCountLogRepository, times(1)).save(any(VisitCountLog.class)); // save 메서드 호출 검증
+    }
 
 }

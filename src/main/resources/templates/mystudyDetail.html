@@ -40,6 +40,7 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <!-- Core theme JS-->
 <script src="/js/mystudyDetail.js"></script>
+<script src="/js/chat.js"></script>
 
 </head>
 <body class="d-flex flex-column h-100 bg-light">
@@ -55,6 +56,9 @@
 					<section>
 						<div class="container-fluid">
 							<input type="hidden" id="groupId" th:value="${groupId}">
+							<input type="hidden" id="userNickname"
+								th:value="${#authentication.principal.nickname}">
+
 							<div class="row mt-3">
 								<!-- Sidebar Section -->
 								<div class="col-md-2 col-lg-2 bg-white rounded-4 shadow-sm ">
@@ -143,6 +147,13 @@
 														<span>최대 멤버 수: <span
 															th:text="${studyGroup.maxMembers}"></span></span>
 													</div>
+												</div>
+
+												<!-- 그룹 채팅 버튼 -->
+												<div class="text-center mt-4">
+													<button id="openChatButton" class="btn btn-primary btn-lg">
+														<i class="fas fa-comments"></i> 채팅방 들어가기
+													</button>
 												</div>
 											</div>
 
@@ -281,54 +292,56 @@
 			</div>
 		</div>
 	</footer>
+
 </body>
-<!-- <script>
-	$(document).ready(function() {
-		// Thymeleaf 변수에서 값을 가져옵니다.
-		const memberCount = $('#memberCount').val();
-		const maxMembers = $('#maxMembers').val();
+<script>
+	/* 	$(document).ready(function() {
+	 // Thymeleaf 변수에서 값을 가져옵니다.
+	 const memberCount = $('#memberCount').val();
+	 const maxMembers = $('#maxMembers').val();
 
-		console.log(memberCount);
+	 console.log(memberCount);
 
-		// 최대 멤버 수에서 현재 멤버 수를 뺀 값을 계산합니다.
-		const remainingMembers = maxMembers - memberCount;
+	 // 최대 멤버 수에서 현재 멤버 수를 뺀 값을 계산합니다.
+	 const remainingMembers = maxMembers - memberCount;
 
-		// 파이 차트를 생성합니다.
-		const ctx = $('#memberChart')[0].getContext('2d');
-		new Chart(ctx, {
-			type : 'pie',
-			data : {
-				labels : [ '현재 멤버 수', '남은 자리 수' ],
-				datasets : [ {
-					data : [ memberCount, remainingMembers ],
-					backgroundColor : [ '#36A2EB', '#FFCE56' ],
-					borderColor : [ '#FFFFFF' ],
-					borderWidth : 1,
-				} ]
-			},
-			options : {
-				responsive : true,
-				plugins : {
-					legend : {
-						position : 'bottom',
-					},
-					tooltip : {
-						callbacks : {
-							label : function(context) {
-								let label = context.label || '';
-								if (label) {
-									label += ': ';
-								}
-								label += context.raw;
-								return label;
-							}
-						}
-					}
-				}
-			}
-		});
-	});
-</script> -->
+	 // 파이 차트를 생성합니다.
+	 const ctx = $('#memberChart')[0].getContext('2d');
+	 new Chart(ctx, {
+	 type : 'pie',
+	 data : {
+	 labels : [ '현재 멤버 수', '남은 자리 수' ],
+	 datasets : [ {
+	 data : [ memberCount, remainingMembers ],
+	 backgroundColor : [ '#36A2EB', '#FFCE56' ],
+	 borderColor : [ '#FFFFFF' ],
+	 borderWidth : 1,
+	 } ]
+	 },
+	 options : {
+	 responsive : true,
+	 plugins : {
+	 legend : {
+	 position : 'bottom',
+	 },
+	 tooltip : {
+	 callbacks : {
+	 label : function(context) {
+	 let label = context.label || '';
+	 if (label) {
+	 label += ': ';
+	 }
+	 label += context.raw;
+	 return label;
+	 }
+	 }
+	 }
+	 }
+	 }
+	 });
+	 }); */
+</script>
+
 </html>
 
 

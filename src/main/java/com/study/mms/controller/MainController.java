@@ -31,12 +31,7 @@ public class MainController {
 	private final StudyGroupService studyGroupService;
 	private final StudyGroupDetailService studyGroupDetailService;
 
-	// 메인페이지
-//	@GetMapping("/")
-//	public String root() {
-//		return "index";
-//	}
-
+	//메인페이지
 	@GetMapping("/")
 	public String showLoginPage(HttpServletRequest request, Model model) {
 		// Flash Attribute 읽기
@@ -194,8 +189,6 @@ public class MainController {
 	// 마이페이지
 	@GetMapping("/mypage")
 	public String mypage(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
-		// System.out.println(principalDetail.getUsername());
-		// System.out.println(principalDetail.getPrimaryKey());
 
 		// 사용자 정보 가져오기
 		User user = principalDetai.getUser();
@@ -220,4 +213,5 @@ public class MainController {
 	public String notice() {
 		return "notice";
 	}
+
 }

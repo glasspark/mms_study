@@ -44,6 +44,5 @@ public class LoginFailureHandler implements AuthenticationFailureHandler {
 		// 리다이렉트를 통해 브라우저 URL 변경
 		request.getSession().setAttribute("loginFailMsg", errorMessage); // controller에서 삭제할 것
 		response.sendRedirect("/"); // 브라우저에서 GET 요청으로 "/"를 다시 요청
-
 	}
 }

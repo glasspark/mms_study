@@ -17,12 +17,8 @@ $(document).ready(function() {
 			url: `/admin/nocite?page=${page}`,
 			type: 'GET',
 			success: function(response) {
-
-				console.log(response);
-
 				setData(response.data.items);
 				setPagination(response.data.currentPage, response.data.totalPages);
-
 			},
 			error: function(xhr, status, error) {
 				console.error("데이터 로드 중 오류 발생:", error);
