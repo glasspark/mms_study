@@ -1,5 +1,13 @@
 // jQuery를 사용해 문서 준비 상태 확인
 $(document).ready(function () {
+    // 오늘 날짜 객체 생성
+    const today = new Date();
+
+    // 년도와 월 구하기
+    const year = today.getFullYear(); // 오늘의 년도 (예: 2024)
+    const month = today.getMonth() + 1; // 오늘의 월 (0 ~ 11이므로 +1 필요)
+
+
     // 데이터 및 설정
     var ctx = document.getElementById('myAreaChart').getContext('2d');
     var myAreaChart = new Chart(ctx, {
@@ -39,4 +47,7 @@ $(document).ready(function () {
             }
         }
     });
+
+
+
 });

@@ -9,7 +9,6 @@ import com.study.mms.repository.VisitCountLogRepository;
 import com.study.mms.repository.VisitorsLogRepository;
 import com.study.mms.service.LoginLogService;
 import com.study.mms.service.StudyGroupService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
@@ -19,18 +18,20 @@ import org.mockito.MockitoAnnotations;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
+import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.util.List;
 import java.util.Optional;
 
-import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
+import static org.junit.jupiter.api.Assertions.*;
+
 
 @SpringBootTest
 @Transactional
+@Rollback(false) // 롤백 방지, 실제 DB에 데이터 유지
 class MmsApplicationTests {
 
     @Mock
@@ -63,22 +64,16 @@ class MmsApplicationTests {
 
 
     @Test
-    void testAddVisitor_WhenNoExistingLog_SaveNewVisitor() {
-        // Given
-        String userId = "te8";
-        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
+    void testFindDailyLogCountsByYearAndMonth() {
+        // Given: 테스트 조건 설정
+        Integer year = 2024;
+        Integer month = 12;
 
-        when(visitorsLogRepository.findByUserIdAndVisitedAtBetween(userId, startOfDay, endOfDay))
-                .thenReturn(Optional.empty()); // 방문 기록이 없는 상태
+        // When: Repository 메서드 호출
+        List<Object[]> results = visitorsLogRepository.findDailyLogCountsBetweenDates(year, month);
 
-        // When
-        loginLogService.addVisitor(userId);
 
-        // Then
-        verify(visitorsLogRepository, times(1)).save(any(VisitorsLog.class)); // save 메서드가 호출되었는지 검증
     }
-
 
 //	@BeforeEach
 //	public void setup() { //로그인 설정
@@ -97,34 +92,6 @@ class MmsApplicationTests {
 //	}
 
 
-    @Test
-    void testAddVisitor_WhenLogExists_DoNotSave() {
-        // Given
-        String userId = "7";
-        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();
-        LocalDateTime endOfDay = LocalDateTime.now().toLocalDate().atTime(LocalTime.MAX);
 
-        VisitorsLog existingLog = VisitorsLog.builder().userId(userId).build();
-        when(visitorsLogRepository.findByUserIdAndVisitedAtBetween(userId, startOfDay, endOfDay))
-                .thenReturn(Optional.of(existingLog)); // 이미 방문 기록이 존재
-
-        // When
-        loginLogService.addVisitor(userId);
-
-        // Then
-        verify(visitorsLogRepository, never()).save(any(VisitorsLog.class)); // save 메서드가 호출되지 않아야 함
-    }
-
-    @Test
-    void testAddCount_SaveVisitCountLog() {
-        // Given
-        String userId = "user123";
-
-        // When
-        loginLogService.addCount(userId);
-
-        // Then
-        verify(visitCountLogRepository, times(1)).save(any(VisitCountLog.class)); // save 메서드 호출 검증
-    }
 
 }

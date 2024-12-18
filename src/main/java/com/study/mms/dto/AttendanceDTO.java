@@ -12,7 +12,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor // 모든 필드를 받는 생성자 자동 생성
 @Getter
 @Builder
-@Schema(description = "출석체크 리스트 반환 DTO")
+@Schema(description = "로그인로그 반환 DTO")
 public class AttendanceDTO {
 	private Integer id;
 	private LocalDate attendance;
