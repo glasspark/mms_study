@@ -2,31 +2,21 @@ package com.study.mms;
 
 import com.study.mms.auth.PrincipalDetail;
 import com.study.mms.model.User;
-import com.study.mms.model.VisitCountLog;
-import com.study.mms.model.VisitorsLog;
 import com.study.mms.repository.UserRepository;
 import com.study.mms.repository.VisitCountLogRepository;
 import com.study.mms.repository.VisitorsLogRepository;
 import com.study.mms.service.LoginLogService;
-import com.study.mms.service.StudyGroupService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
-
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
 import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
 import java.util.List;
-import java.util.Optional;
-
-import static org.junit.jupiter.api.Assertions.*;
 
 
 @SpringBootTest
@@ -45,13 +35,16 @@ class MmsApplicationTests {
 
     @Mock
     private VisitorsLogRepository visitorsLogRepository; // Mock Repository
+
+
     @Mock
-    private  VisitCountLogRepository visitCountLogRepository;  //방문 횟수를 기록
+    private VisitCountLogRepository visitCountLogRepository;  //방문 횟수를 기록
 
     @InjectMocks
     private LoginLogService loginLogService; // 테스트 대상 서비스
 
     private User specificUser;
+
 
     //@Mock => Mock 객체를 생성할 때 사용
     //@InjectMocks => Mock 객체를 주입하여 테스트 대상 객체를 생성할 때 사용
@@ -66,12 +59,18 @@ class MmsApplicationTests {
     @Test
     void testFindDailyLogCountsByYearAndMonth() {
         // Given: 테스트 조건 설정
-        Integer year = 2024;
-        Integer month = 12;
+        String startDate = "2024-12-01";
+        String endDate = "2024-012-30";
+
 
         // When: Repository 메서드 호출
-        List<Object[]> results = visitorsLogRepository.findDailyLogCountsBetweenDates(year, month);
+        List<Object[]> results = visitCountLogRepository.findDailyVisitCountBetweenDates(startDate, endDate);
+        for (Object[] result : results) {
+            System.out.println("성공??");
+            System.out.println(result[0]);
+        }
 
+        System.out.println("왜죠?");
 
     }
 
@@ -90,8 +89,6 @@ class MmsApplicationTests {
 //		when(principalDetail.getUser()).thenReturn(specificUser); // 특정 사용자 설정
 //
 //	}
-
-
 
 
 }

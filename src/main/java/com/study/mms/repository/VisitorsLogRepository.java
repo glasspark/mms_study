@@ -37,7 +37,7 @@ public interface VisitorsLogRepository extends JpaRepository<VisitorsLog, Intege
             "ON DATE_FORMAT(v.visited_at, '%Y-%m-%d') = d.date " +
             "GROUP BY d.date " +
             "ORDER BY d.date", nativeQuery = true)
-    List<Object[]> findDailyLogCountsBetweenDates(@Param("startDate") Integer startDate,
-                                                  @Param("endDate") Integer endDate);
+    List<Object[]> findDailyLogCountsBetweenDates(@Param("startDate") String startDate,
+                                                  @Param("endDate") String endDate);
 
 }

@@ -15,9 +15,10 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
-import java.time.LocalDate;
-import java.time.LocalDateTime;
-import java.time.LocalTime;
+import java.math.BigInteger;
+import java.sql.Timestamp;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -44,9 +45,7 @@ public class LoginLogService {
         // 방문자가 기록되어 있지 않는다면 : 저장
         if (visitLog.isEmpty()) {
 
-            VisitorsLog visitorsLog = VisitorsLog.builder()
-                    .userId(userId)
-                    .build();
+            VisitorsLog visitorsLog = VisitorsLog.builder().userId(userId).build();
             visitorsLogRepository.save(visitorsLog);
         }
     }
@@ -61,7 +60,7 @@ public class LoginLogService {
     //방문자수, 방문 횟수 데이터 반환(관리자 페이지 사용)
     public ResponseEntity<Map<String, Object>> getUserLoginLog(Integer year, Integer month) {
         //데이터 값 유효성 확인
-        if(year == null || month == null) {
+        if (year == null || month == null) {
             throw new CustomException(ErrorCode.INVALID_PARAMETER);
         }
         if (year > LocalDate.now().getYear()) {
@@ -71,27 +70,45 @@ public class LoginLogService {
             throw new CustomException(ErrorCode.INVALID_PARAMETER);
         }
 
-        //방문자 수
-        List<LoginLogDTO.visitorsDTO> visitors = visitorsLogRepository.findDailyLogCountsBetweenDates(year, month)
+
+// 1. 해당 월의 첫 번째 날
+        LocalDate startDate = LocalDate.of(year, month, 1);
+
+        // 2. 해당 월의 마지막 날
+        LocalDate endDate = startDate.withDayOfMonth(startDate.lengthOfMonth());
+
+        // 3. 날짜를 문자열로 변환
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
+        String startDateString = startDate.format(formatter);
+        String endDateString = endDate.format(formatter);
+
+        // 방문자 수
+        List<LoginLogDTO.visitorsDTO> visitors = visitorsLogRepository
+                .findDailyLogCountsBetweenDates(startDateString, endDateString)
                 .stream()
                 .map(data -> LoginLogDTO.visitorsDTO.builder()
-                        .date(LocalDateTime.parse((String) data[0]))
-                        .count((Integer) data[1])
+                        .date(data[0].toString())
+                        .count(((Number) data[1]).intValue())
                         .build())
                 .collect(Collectors.toList());
 
-        //방문횟수
-        List<LoginLogDTO.visitCountDTO> visitCounts = visitCountLogRepository.findDailyVisitCountBetweenDates(year, month)
+        // 방문 횟수
+        List<LoginLogDTO.visitCountDTO> visitCounts = visitCountLogRepository
+                .findDailyVisitCountBetweenDates(startDateString, endDateString)
                 .stream()
                 .map(data -> LoginLogDTO.visitCountDTO.builder()
-                        .date(LocalDateTime.parse((String) data[0]))
-                        .count((Integer) data[1])
+                        .date(data[0].toString())
+                        .count(((Number) data[1]).intValue())
                         .build())
                 .collect(Collectors.toList());
 
+
+        // DTO 생성 및 반환
+        LoginLogDTO responseDTO = LoginLogDTO.builder().visitors(visitors).visitCount(visitCounts).build();
+
+
         //방문 횟수
-        return ResponseUtil.buildSuccessResponseWithData(HttpStatus.OK, SuccessCode.DATA_FETCHED.getMessage(),
-                visitors);
+        return ResponseUtil.buildSuccessResponseWithData(HttpStatus.OK, SuccessCode.DATA_FETCHED.getMessage(), responseDTO);
     }
 
 

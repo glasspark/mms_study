@@ -25,7 +25,7 @@ public class LoginLogDTO {
  @Builder
  @Schema(description = "방문자수 DTO")
  public static class visitorsDTO {
-  private LocalDateTime date;
+  private String date;
   private Integer count;
 
  }
@@ -35,7 +35,7 @@ public class LoginLogDTO {
  @Builder
  @Schema(description = "방문횟수 DTO")
  public static class visitCountDTO {
-  private LocalDateTime date;
+  private String date;
   private Integer count;
 
  }

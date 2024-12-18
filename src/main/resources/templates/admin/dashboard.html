@@ -26,7 +26,9 @@
 	crossorigin="anonymous"></script>
 	<!-- 제이쿼리 -->
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+	<script src="/js/admin/datatables-simple-demo.js"></script>
 	<script src="/js/admin/adminChart.js"></script>
+
 </head>
 <body class="sb-nav-fixed">
 	<!-- 네비게이션바 -->
@@ -39,15 +41,39 @@
 		<div id="layoutSidenav_content">
 			<main>
 				<div class="container-fluid px-4">
-					<h1 class="mt-4">통계</h1>
-					<ol class="breadcrumb mb-4">
-						<li class="breadcrumb-item active"></li>
-					</ol>
+					<div class="mt-4" >
+						<div class="d-flex justify-content-between align-items-center mb-3">
+							<!-- 왼쪽: 통계 제목 -->
+							<h1 class="mb-0">이용자수</h1>
+
+							<!-- 오른쪽: 년도, 요일 선택 및 버튼 -->
+							<div class="d-flex align-items-center">
+								<!-- 년도 선택 -->
+								<select class="form-select me-2" style="width: 120px;" id="yearSelect">
+									<option selected>년도 선택</option>
+
+								</select>
+
+								<!-- 요일 선택 -->
+								<select class="form-select me-2" style="width: 120px;" id="daySelect">
+									<option selected>월 선택</option>
+
+
+								</select>
+
+								<!-- 버튼 -->
+								<button class="btn btn-primary" id="applyButton">적용</button>
+							</div>
+<!--						<ol class="breadcrumb mb-4">-->
+<!--							<li class="breadcrumb-item active">ff</li>-->
+<!--						</ol>-->
+					</div>
+
 					<div class="row">
 						<div class="col-xl-12">
 							<div class="card mb-4">
 								<div class="card-header">
-									<i class="fas fa-chart-area me-1"></i> Area Chart Example
+									<i class="fas fa-chart-area me-1"></i> 이용자수
 								</div>
 								<div class="card-body">
 									<canvas id="myAreaChart" width="100%" height="30"></canvas>

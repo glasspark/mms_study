@@ -18,9 +18,10 @@ public class AdminDashBoardController {
     private final LoginLogService loginLogService;
 
     @ResponseBody
-    @GetMapping("/dash/")
+    @GetMapping("/dash")
     @Operation(summary = "대시보드 방문 로그", description = "관리자 페이지 대시보드 방문자수, 방문횟수 로그 API")
-    public ResponseEntity<Map<String, Object>> deleteNotice(@RequestParam Integer year, @RequestParam Integer month
+    public ResponseEntity<Map<String, Object>> getUserLoginLog(
+            @RequestParam("year") Integer year, @RequestParam("month") Integer month
     ) {
         return loginLogService.getUserLoginLog(year, month);
     }
