@@ -18,7 +18,7 @@ $(document).ready(function () {
                     pointHoverBackgroundColor: "rgb(106,165,218)",
                     pointHitRadius: 50,
                     pointBorderWidth: 2,
-                    data: [] ,// 접속횟수 데이터
+                    data: [],// 접속횟수 데이터
                     fill: false // 내부 채우기 비활성화
                 },
                 {
@@ -32,7 +32,7 @@ $(document).ready(function () {
                     pointHoverBackgroundColor: "rgb(197,127,223)",
                     pointHitRadius: 50,
                     pointBorderWidth: 2,
-                    data: [] ,// 접속자수 데이터
+                    data: [],// 접속자수 데이터
                     fill: false // 내부 채우기 비활성화
                 }
             ],
@@ -83,7 +83,7 @@ $(document).ready(function () {
         }
     });
 
-    
+
     /* 검색창 년도 데이터 넣기*/
     const currentYear = new Date().getFullYear();
 
@@ -98,14 +98,7 @@ $(document).ready(function () {
         '7월', '8월', '9월', '10월', '11월', '12월'
     ];
     months.forEach((month, index) => {
-        $('#daySelect').append(`<option value="${index + 1}">${month}</option>`);
-    });
- //날짜 관련 수정 필요
-
-    // 수정 버튼 클릭 이벤트
-    $(document).on("click", "#applyButton", function() {
-       let month = $(yearSelect).val();
-       let year = $(daySelect).val();
+        $('#monthSelect').append(`<option value="${index + 1}">${month}</option>`);
     });
 
 
@@ -117,14 +110,20 @@ $(document).ready(function () {
     const month = today.getMonth() + 1; // 오늘의 월 (0 ~ 11이므로 +1 필요)
 
 
+    //오늘 날짜를 표시
+    $('#yearSelect').val(year); // 현재 년도를 기본 선택
+    $('#monthSelect').val(month); // 현재 월을 기본 선택
+
+
     function getData(year, month) {
+
+
         $.ajax({
             url: `/admin/dash?year=${year}&month=${month}`,
             type: 'GET',
             success: function (response) {
                 console.log(response)
                 setData(response.data);
-                // setPagination(response.data.currentPage, response.data.totalPages);
             },
             error: function (xhr, status, error) {
                 console.error("데이터 로드 중 오류 발생:", error);
@@ -133,14 +132,13 @@ $(document).ready(function () {
     }
 
     function setData(data) {
-        let data1 =[];
+        let data1 = [];
         data1.push(...data.visitors.map(item => item.count));
 
         let data2 = [];
         data2.push(...data.visitCount.map(item => item.count));
 
-
-       myLineChart.data.labels = data.visitCount.map(item => item.date);
+        myLineChart.data.labels = data.visitCount.map(item => item.date);
 
         myLineChart.data.datasets[0].data = data2;
         myLineChart.data.datasets[1].data = data1;
@@ -150,5 +148,12 @@ $(document).ready(function () {
 
     getData(year, month);
 
+    // 수정 버튼 클릭 이벤트
+    $(document).on("click", "#applyButton", function () {
+        let month = $("#monthSelect").val();
+        let year = $("#yearSelect").val();
+        getData(year, month)
+
+    });
 
 });

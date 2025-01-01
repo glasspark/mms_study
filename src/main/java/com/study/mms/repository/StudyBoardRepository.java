@@ -21,4 +21,7 @@ public interface StudyBoardRepository extends JpaRepository<StudyBoard, Integer>
 
 	List<StudyBoard> findByStudyGroupId(Integer groupId);
 
+	// 특정 사용자(User ID)와 연관된 모든 게시글 조회
+	List<StudyBoard> findAllByUser_Id(Integer userId);
+
 }

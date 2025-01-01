@@ -60,7 +60,7 @@ class MmsApplicationTests {
     void testFindDailyLogCountsByYearAndMonth() {
         // Given: 테스트 조건 설정
         String startDate = "2024-12-01";
-        String endDate = "2024-012-30";
+        String endDate = "2024-12-30";
 
 
         // When: Repository 메서드 호출

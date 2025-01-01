@@ -55,7 +55,7 @@ public class CustomAuthenticationSuccessHandler implements AuthenticationSuccess
 
 		// 로그인 성공 시 Swagger UI 페이지로 리다이렉트
 		//response.sendRedirect("/swagger-ui.html");
-		response.sendRedirect("/home");
+		response.sendRedirect("/study");
 	}
 
 }

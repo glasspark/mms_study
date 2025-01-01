@@ -43,8 +43,6 @@ $(document).ready(function() {
 	});
 
 
-
-
 	// 댓글 등록
 	$("#registerButton").click(function() {
 

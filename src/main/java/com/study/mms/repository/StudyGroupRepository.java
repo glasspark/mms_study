@@ -70,4 +70,8 @@ Page<StudyGroup> findByFilters(@Param("status") String status,
 			+ "WHERE sg.id = :groupId AND sg.leader.id = :userId")
 	boolean isUserLeader(@Param("groupId") Integer groupId, @Param("userId") Integer userId);
 
+
+	// 특정 리더 ID로 모든 스터디 그룹 조회
+	List<StudyGroup> findAllByLeaderId(Integer leaderId);
+
 }

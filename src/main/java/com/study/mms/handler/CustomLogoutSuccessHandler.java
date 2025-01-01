@@ -29,7 +29,7 @@ public class CustomLogoutSuccessHandler implements LogoutSuccessHandler {
 
 					// 관리자 권한인데 경로에 admin이 포함되어 있는지 여부에 따라서 구분
 					if (refererUrl != null && refererUrl.contains("/admin/")) {
-						response.sendRedirect("/admin/login");
+						response.sendRedirect("/home");
 					} else {
 						response.sendRedirect("/home");
 					}

@@ -13,5 +13,7 @@ public interface UploadedFileRepository extends JpaRepository<UploadedFile, Inte
 	List<UploadedFile> findByStudyGroupIdOrderByCreatedAtDesc(Integer studyGroupId);
 	
 	List<UploadedFile> findByStudyGroup(StudyGroup studyGroup);
+
+	List<UploadedFile> findAllByUserId(Integer userId);
 	
 }
