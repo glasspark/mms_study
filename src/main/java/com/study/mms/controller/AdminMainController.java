@@ -112,4 +112,9 @@ public class AdminMainController {
 		return "admin/noticeForm";
 	}
 
+	@GetMapping("/user/list")
+	public String userList() {
+		return "admin/userList";
+	}
+
 }

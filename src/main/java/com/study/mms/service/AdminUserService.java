@@ -25,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -37,15 +38,15 @@ public class AdminUserService {
     private final UserRepository userRepository;
     private final UploadedFileRepository uploadedFileRepository;
     private final StudyBoardRepository studyBoardRepository;
-    private final StudyGroupRepository studyGroupRepository ;
+    private final StudyGroupRepository studyGroupRepository;
 
     public ResponseEntity<Map<String, Object>> getUsers(Integer page, String type, String content) {
 
         if (page == null) {
-            page = 0;
+            page = 1;
         }
 
-        if (type == null) {
+        if (type == null || type.isEmpty()) {
             type = "default";
         }
 
@@ -53,12 +54,11 @@ public class AdminUserService {
             throw new CustomException(ErrorCode.INVALID_REQUEST_TYPE);
         }
 
-        Pageable pageable = PageRequest.of(page, 10, Sort.by(Sort.Direction.DESC, "id"));
+        Pageable pageable = PageRequest.of(page - 1, 10, Sort.by(Sort.Direction.DESC, "id"));
         Page<User> users;
 
         if (type.equals("nickname")) {
             users = userRepository.findUsersByNickname(content, pageable);
-            System.out.println(users.getContent().get(0).getNickname());
         } else if (type.equals("email")) {
             users = userRepository.findUsersByNickname(content, pageable);
         } else {
@@ -70,13 +70,22 @@ public class AdminUserService {
                 .map(AdminUserInfoDTO::fromEntity)
                 .collect(Collectors.toList());
 
-        return ResponseUtil.buildSuccessResponseWithData(HttpStatus.OK, SuccessCode.DATA_LOADED.getMessage(),
-                userDTOs);
+        // 페이징 정보와 함께 반환
+        Map<String, Object> pageData = new HashMap<>();
+        pageData.put("pagination", Map.of(
+                "currentPage", users.getNumber() + 1, //클라에게 1 부터 시작이 되므로
+                "totalPages", users.getTotalPages(),
+                "totalElements", users.getTotalElements(),
+                "pageSize", users.getSize()
+        ));
+        return ResponseUtil.buildSuccessResponseWithDataAndPageData(HttpStatus.OK, SuccessCode.DATA_LOADED.getMessage(),
+                userDTOs, pageData);
     }
 
 
     @Transactional
     public ResponseEntity<Map<String, Object>> deleteUser(Integer id, HttpServletRequest req) throws Exception {
+
         //이용자 데이터 확인
         if (id == null) {
             //파라이터 값 확인

@@ -26,4 +26,14 @@ public class ResponseUtil {
 		return ResponseEntity.status(status).body(successDetails);
 	}
 
+	public static ResponseEntity<Map<String, Object>> buildSuccessResponseWithDataAndPageData(HttpStatus status, String message,
+																				   Object data, Object page) {
+		Map<String, Object> successDetails = new HashMap<>();
+		successDetails.put("status", status.value());
+		successDetails.put("message", message);
+		successDetails.put("data", data);
+		successDetails.put("page", page);
+		return ResponseEntity.status(status).body(successDetails);
+	}
+
 }

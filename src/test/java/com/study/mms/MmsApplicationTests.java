@@ -6,13 +6,16 @@ import com.study.mms.repository.UserRepository;
 import com.study.mms.repository.VisitCountLogRepository;
 import com.study.mms.repository.VisitorsLogRepository;
 import com.study.mms.service.LoginLogService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.test.annotation.Rollback;
 
 import javax.transaction.Transactional;
@@ -20,7 +23,6 @@ import java.util.List;
 
 
 @SpringBootTest
-@Transactional
 @Rollback(false) // 롤백 방지, 실제 DB에 데이터 유지
 class MmsApplicationTests {
 
@@ -30,7 +32,7 @@ class MmsApplicationTests {
     @Mock
     private PrincipalDetail principalDetail;
 
-    @Mock
+    @Autowired
     private UserRepository userRepository;
 
     @Mock
@@ -50,29 +52,13 @@ class MmsApplicationTests {
     //@InjectMocks => Mock 객체를 주입하여 테스트 대상 객체를 생성할 때 사용
     //@Autowired => 의존성 주입
 
-    @BeforeEach
-    void setUp() {
-        MockitoAnnotations.openMocks(this);
-    }
+//    @BeforeEach
+//    void setUp() {
+//        MockitoAnnotations.openMocks(this);
+//    }
 
 
-    @Test
-    void testFindDailyLogCountsByYearAndMonth() {
-        // Given: 테스트 조건 설정
-        String startDate = "2024-12-01";
-        String endDate = "2024-12-30";
 
-
-        // When: Repository 메서드 호출
-        List<Object[]> results = visitCountLogRepository.findDailyVisitCountBetweenDates(startDate, endDate);
-        for (Object[] result : results) {
-            System.out.println("성공??");
-            System.out.println(result[0]);
-        }
-
-        System.out.println("왜죠?");
-
-    }
 
 //	@BeforeEach
 //	public void setup() { //로그인 설정
@@ -90,5 +76,32 @@ class MmsApplicationTests {
 //
 //	}
 
+
+    @Test
+    public void testRegisterMultipleUsers() {
+        // 테스트 데이터
+        String password = "password123";
+        for (int i = 41; i < 60; i++) {
+            String salt = BCrypt.gensalt();
+            String encPassword = BCrypt.hashpw(password, salt);
+
+            User user = new User();
+            user.setUsername("username" + i);
+            user.setEmail("username" + i + "@example.com");
+            user.setNickname("username" + i + "_nickname");
+            user.setSalt(salt);
+            user.setPassword(encPassword);
+            user.setRole("ROLE_USER");
+            user.setImg_name("default_img");
+            user.setImg_path("/img/defaultImg.png");
+            user.setSns("DEFAULT");
+
+            // 데이터 저장
+            userRepository.save(user);
+
+            System.out.println("데이터 저장 완료");
+        }
+
+    }
 
 }
