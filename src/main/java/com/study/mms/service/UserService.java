@@ -23,6 +23,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCrypt;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -965,13 +966,14 @@ public class UserService {
         return usersRepository.existsByNickname(nickname);
     }
 
-    public ResponseEntity<Map<String, Object>> checkSocialLoginUserInfo(String nickname, String email, HttpServletRequest req, String sns) {
+    public ResponseEntity<Map<String, Object>> checkSocialLoginUserInfo(String nickname, String email, HttpServletRequest req, HttpServletRequest request) {
 
         HttpSession session = req.getSession();
 
         // 이메일 인증 여부 확인
         Boolean isAuthenticated = (Boolean) session.getAttribute("isAuthenticated");
         String authEmail = (String) session.getAttribute("authEmail");
+
 
         // 인증되지 않았거나, 인증된 이메일이 회원가입 이메일과 다를 경우 에러 반환
         if (isAuthenticated == null || !isAuthenticated || !authEmail.equals(email)) {
@@ -992,32 +994,29 @@ public class UserService {
         if (checkSocialLoginNickname(nickname)) {
             throw new CustomException(ErrorCode.ALREADY_SAVED_NICKNAME);
         }
+        // SecurityContext에서 Authentication 객체 가져오기
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        //이메일은 세션에 저장이 되어 있으므로 닉네임만 저장
-        session.setAttribute("authNickname", nickname);
+        System.out.println("userinfo is..");
+        System.out.println(authentication.getName());
 
-        String redirectURL;
+        Optional<User> userinfo = usersRepository.findByUsername(authentication.getName());
 
-        System.out.println("sns");
-        System.out.println(sns);
-
-        switch (sns) {
-            case "kakao":
-                redirectURL = "/auth/kakaoLoginPage";
-                break;
-            case "naver":
-                redirectURL = "/auth/naverLoginPage";
-                break;
-            default:
-                throw new CustomException(ErrorCode.INTERNAL_SERVER_ERROR);
+        if(userinfo.isPresent()){
+            User user = userinfo.get();
+            user.setNickname(nickname);
+            user.setEmail(email);
+            usersRepository.save(user);
         }
 
-        Map<String, Object> returnMap = new HashMap<>();
-        returnMap.put("redirectURL", redirectURL);
+        //세션에 저장된 값을 삭제
+        session.removeAttribute("isAuthenticated");
+        session.removeAttribute("authEmail");
 
-        // 성공 응답 생성
-        return ResponseUtil.buildSuccessResponseWithData(HttpStatus.OK, SuccessCode.DATA_FETCHED.getMessage(),
-                returnMap);
+        //인증이 끝났음을 나타냄 (인터럽트)
+        session.setAttribute("socialInput", true);
+
+        return ResponseUtil.buildSuccessResponse(HttpStatus.CREATED, SuccessCode.DATA_CREATED.getMessage());
     }
 
 }

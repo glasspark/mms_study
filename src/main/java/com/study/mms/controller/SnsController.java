@@ -59,16 +59,11 @@ public class SnsController {
     }
 
 
-    //공통 페이지 리다이렉트
-    //이용자 정보가 없을 때 닉네임, 이메일 설정
+    // 타입에 따라서 로그인 요청을 보냄
     @RequestMapping("/auth/login-term-of-use/{sns}")
     public String AuthLoginTermOfUse(Model model, Integer prePage, @PathVariable(value = "sns") String sns,
                                      HttpServletRequest request) throws Exception {
-        PrevPage.setPrevPage(request);
-
-        System.out.println("??");
-        System.out.println("sns=" + sns);
-
+//        PrevPage.setPrevPage(request);
         // 요청 처리
         if (sns.equals("naver")) {
             String view = naverService.naverLoginPage(request); // view 값을 type에 할당
@@ -84,11 +79,10 @@ public class SnsController {
         return "/";
     }
 
-    @RequestMapping("/auth/login-return/{sns}")
-    public String AuthLoginReturn(Model model, HttpServletRequest request, @PathVariable(value = "sns") String sns) {
-        System.out.println("리턴 값이 오나요?");
-        model.addAttribute("location", "login");
-        model.addAttribute("sns", sns); // type 값을 뷰로 전달
-        return "/socialSignup";
-    }
+//    @RequestMapping("/auth/login-return/{sns}")
+//    public String AuthLoginReturn(Model model, HttpServletRequest request, @PathVariable(value = "sns") String sns) {
+//        model.addAttribute("location", "login");
+//        model.addAttribute("sns", sns); // type 값을 뷰로 전달
+//        return "/socialSignup";
+//    }
 }

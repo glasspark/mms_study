@@ -1,5 +1,6 @@
 package com.study.mms.controller;
 
+import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -28,193 +29,197 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public class MainController {
 
-	private final StudyGroupService studyGroupService;
-	private final StudyGroupDetailService studyGroupDetailService;
+    private final StudyGroupService studyGroupService;
+    private final StudyGroupDetailService studyGroupDetailService;
 
-	//메인페이지
-	@GetMapping("/")
-	public String showLoginPage(HttpServletRequest request, Model model) {
-		// Flash Attribute 읽기
-		String loginFailMsg = (String) request.getSession().getAttribute("loginFailMsg");
+    //메인페이지
+    @GetMapping("/")
+    public String showLoginPage(HttpServletRequest request, Model model) {
+        // Flash Attribute 읽기
+        String loginFailMsg = (String) request.getSession().getAttribute("loginFailMsg");
 
-		if (loginFailMsg != null) {
-			model.addAttribute("loginFailMsg", loginFailMsg);
-			request.getSession().removeAttribute("loginFailMsg"); // 한 번 사용 후 삭제
-		}
-		return "index"; // login.html로 렌더링
-	}
+        if (loginFailMsg != null) {
+            model.addAttribute("loginFailMsg", loginFailMsg);
+            request.getSession().removeAttribute("loginFailMsg"); // 한 번 사용 후 삭제
+        }
+        return "index"; // login.html로 렌더링
+    }
 
-	// 로그인 후 홈페이지
-	@GetMapping("/home")
-	public String homePage() {
-		return "home";
-	}
+    // 로그인 후 홈페이지
+    @GetMapping("/home")
+    public String homePage() {
+        return "home";
+    }
 
-	// 회원가입
-	@GetMapping("/join")
-	public String join() {
-		return "join";
-	}
+    // 회원가입
+    @GetMapping("/join")
+    public String join() {
+        return "join";
+    }
 
-	// 아이디, 비밀번호 찾기
-	@GetMapping("/help/info/{type}")
-	public String helpInfo(@PathVariable("type") String type, Model model) {
+    // 아이디, 비밀번호 찾기
+    @GetMapping("/help/info/{type}")
+    public String helpInfo(@PathVariable("type") String type, Model model) {
 
-		if (type.equals("id")) {
-			model.addAttribute("typeName", "아이디");
-		} else if (type.equals("pw")) {
-			model.addAttribute("typeName", "비밀번호");
-		} else {
-			return "/index";
-		}
-		model.addAttribute("type", type);
-		return "/helpInfo";
-	}
+        if (type.equals("id")) {
+            model.addAttribute("typeName", "아이디");
+        } else if (type.equals("pw")) {
+            model.addAttribute("typeName", "비밀번호");
+        } else {
+            return "/index";
+        }
+        model.addAttribute("type", type);
+        return "/helpInfo";
+    }
 
-	// 스터디
-	@GetMapping("/study")
-	public String study(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model,
-			@RequestParam(value = "page", defaultValue = "0") int page,
-			@RequestParam(value = "type", defaultValue = "all") String type,
-			@RequestParam(value = "searchText", required = false) String searchText,
-			@RequestParam(value = "tag", required = false) String tag) {
+    // 스터디
+    @GetMapping("/study")
+    public String study(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model,
+                        @RequestParam(value = "page", defaultValue = "0") int page,
+                        @RequestParam(value = "type", defaultValue = "all") String type,
+                        @RequestParam(value = "searchText", required = false) String searchText,
+                        @RequestParam(value = "tag", required = false) String tag) {
 
-		if ("null".equals(searchText) || "".equals(searchText)) {
-			searchText = null;
-		}
-		if ("null".equals(tag) || "".equals(tag)) {
-			tag = null;
-		}
+        if ("null".equals(searchText) || "".equals(searchText)) {
+            searchText = null;
+        }
+        if ("null".equals(tag) || "".equals(tag)) {
+            tag = null;
+        }
 
-		Page<StudyGroupDTO> studyGroupsPage = studyGroupService.getStudyGroupLists(principalDetai, page, type,
-				searchText, tag);
+        Page<StudyGroupDTO> studyGroupsPage = studyGroupService.getStudyGroupLists(principalDetai, page, type,
+                searchText, tag);
 
-		model.addAttribute("data", studyGroupsPage.getContent());
-		model.addAttribute("currentPage", studyGroupsPage.getNumber());
-		model.addAttribute("totalPages", studyGroupsPage.getTotalPages());
-		model.addAttribute("totalItems", studyGroupsPage.getTotalElements());
-		model.addAttribute("status", "success");
-		model.addAttribute("startPage", (studyGroupsPage.getNumber() / 5) * 5);
-		model.addAttribute("endPage",
-				Math.min((studyGroupsPage.getNumber() / 5) * 5 + 4, studyGroupsPage.getTotalPages() - 1));
-		model.addAttribute("type", type);
-		model.addAttribute("previousPage", Math.max((studyGroupsPage.getNumber() / 5) * 5 - 5, 0));
-		model.addAttribute("nextPage",
-				Math.min((studyGroupsPage.getNumber() / 5) * 5 + 5, studyGroupsPage.getTotalPages() - 1));
-		model.addAttribute("size", studyGroupsPage.getSize());
-		model.addAttribute("searchText", searchText);
-		model.addAttribute("tag", tag);
+        model.addAttribute("data", studyGroupsPage.getContent());
+        model.addAttribute("currentPage", studyGroupsPage.getNumber());
+        model.addAttribute("totalPages", studyGroupsPage.getTotalPages());
+        model.addAttribute("totalItems", studyGroupsPage.getTotalElements());
+        model.addAttribute("status", "success");
+        model.addAttribute("startPage", (studyGroupsPage.getNumber() / 5) * 5);
+        model.addAttribute("endPage",
+                Math.min((studyGroupsPage.getNumber() / 5) * 5 + 4, studyGroupsPage.getTotalPages() - 1));
+        model.addAttribute("type", type);
+        model.addAttribute("previousPage", Math.max((studyGroupsPage.getNumber() / 5) * 5 - 5, 0));
+        model.addAttribute("nextPage",
+                Math.min((studyGroupsPage.getNumber() / 5) * 5 + 5, studyGroupsPage.getTotalPages() - 1));
+        model.addAttribute("size", studyGroupsPage.getSize());
+        model.addAttribute("searchText", searchText);
+        model.addAttribute("tag", tag);
 
-		return "study";
-	}
+        return "study";
+    }
 
-	// 내 스터디
-	@GetMapping("/mystudy")
-	public String mystudy(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
+    // 내 스터디
+    @GetMapping("/mystudy")
+    public String mystudy(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
 
-		List<StudyGroupDTO> getUserGroup = studyGroupService.getUserStudyGroup(principalDetai);
-		model.addAttribute("data", getUserGroup);
-		return "mystudy";
-	}
+        List<StudyGroupDTO> getUserGroup = studyGroupService.getUserStudyGroup(principalDetai);
+        model.addAttribute("data", getUserGroup);
+        return "mystudy";
+    }
 
-	// 내 스터디 그룹 상세
-	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
-	@GetMapping("/mystudy/detail/{groupId}")
-	public String myStudyDetail(@AuthenticationPrincipal PrincipalDetail principalDetail,
-			@PathVariable("groupId") Integer groupId, Model model) {
-		// 내가 이 스터디 그룹권한을 확인
-		String userRole = studyGroupService.isUserMemberOfRole(principalDetail, groupId);
-		model.addAttribute("groupId", groupId);
-		model.addAttribute("userRole", userRole);
-		// 스터디 그룹에 대한 정보를 반환
-		StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(groupId);
-		model.addAttribute("studyGroup", studyGroup);
-		return "mystudyDetail";
-	}
+    // 내 스터디 그룹 상세
+    @PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
+    @GetMapping("/mystudy/detail/{groupId}")
+    public String myStudyDetail(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                                @PathVariable("groupId") Integer groupId, Model model) {
+        // 내가 이 스터디 그룹권한을 확인
+        String userRole = studyGroupService.isUserMemberOfRole(principalDetail, groupId);
+        model.addAttribute("groupId", groupId);
+        model.addAttribute("userRole", userRole);
+        // 스터디 그룹에 대한 정보를 반환
+        StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(groupId);
+        model.addAttribute("studyGroup", studyGroup);
+        return "mystudyDetail";
+    }
 
-	// 내 스터디 그룹 상세 게시판 글 작성 혹은 수정
-	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId) && (#boardId == null || @studyGroupService.isUserAuthorOfBoardInGroup( #principalDetail, #groupId,#boardId ))")
-	@GetMapping("/mystudy/detail/board/{groupId}")
-	public String studyBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,
-			@PathVariable("groupId") Integer groupId,
-			@RequestParam(value = "boardId", required = false) Integer boardId, Model model) {
-		model.addAttribute("groupId", groupId);
-		model.addAttribute("boardId", boardId);
-		if (boardId != null) {
-			StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
-			model.addAttribute("boardDetail", boardDetail);
-		}
-		// 수정 들어가야 합니다.
-		return "studyBoard";
-	}
+    // 내 스터디 그룹 상세 게시판 글 작성 혹은 수정
+    @PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId) && (#boardId == null || @studyGroupService.isUserAuthorOfBoardInGroup( #principalDetail, #groupId,#boardId ))")
+    @GetMapping("/mystudy/detail/board/{groupId}")
+    public String studyBoard(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                             @PathVariable("groupId") Integer groupId,
+                             @RequestParam(value = "boardId", required = false) Integer boardId, Model model) {
+        model.addAttribute("groupId", groupId);
+        model.addAttribute("boardId", boardId);
+        if (boardId != null) {
+            StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
+            model.addAttribute("boardDetail", boardDetail);
+        }
+        // 수정 들어가야 합니다.
+        return "studyBoard";
+    }
 
-	// 내 스터디 그룹 게시판 글 상세보기 페이지
-	@PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
-	@GetMapping("/mystudy/detail/board/{groupId}/{boardId}")
-	public String studyBoardContent(@AuthenticationPrincipal PrincipalDetail principalDetail,
-			@PathVariable("groupId") Integer groupId, @PathVariable("boardId") Integer boardId, Model model) {
+    // 내 스터디 그룹 게시판 글 상세보기 페이지
+    @PreAuthorize("@studyGroupService.isUserMemberOfGroup(#principalDetail, #groupId)")
+    @GetMapping("/mystudy/detail/board/{groupId}/{boardId}")
+    public String studyBoardContent(@AuthenticationPrincipal PrincipalDetail principalDetail,
+                                    @PathVariable("groupId") Integer groupId, @PathVariable("boardId") Integer boardId, Model model) {
 
-		StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
+        StudyBoardDTO boardDetail = studyGroupDetailService.getStudyBoardDetail(principalDetail, groupId, boardId);
 
-		model.addAttribute("groupId", groupId);
-		model.addAttribute("boardId", boardId);
-		model.addAttribute("boardDetail", boardDetail);
+        model.addAttribute("groupId", groupId);
+        model.addAttribute("boardId", boardId);
+        model.addAttribute("boardDetail", boardDetail);
 
-		return "studyBoardDetail";
-	}
+        return "studyBoardDetail";
+    }
 
-	// 스터디 그룹 생성 및 수정
-	@GetMapping("/create/group")
-	public String createGroup(Model model, @RequestParam(value = "num", required = false) Integer num) {
+    // 스터디 그룹 생성 및 수정
+    @GetMapping("/create/group")
+    public String createGroup(Model model, @RequestParam(value = "num", required = false) Integer num) {
 
-		if (num != null) {
-			StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(num);
-			model.addAttribute("groupDTO", studyGroup);
-		} else {
-			model.addAttribute("groupDTO", new CreateStudyGroupDTO());
-		}
-		return "createGroup";
-	}
+        if (num != null) {
+            StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(num);
+            model.addAttribute("groupDTO", studyGroup);
+        } else {
+            model.addAttribute("groupDTO", new CreateStudyGroupDTO());
+        }
+        return "createGroup";
+    }
 
-	// 스터디 그룹 상세페이지
-	@GetMapping("/study/{id}")
-	public String viewGroupDetail(@PathVariable("id") Integer id, Model model,
-			@AuthenticationPrincipal PrincipalDetail principalDetai) {
+    // 스터디 그룹 상세페이지
+    @GetMapping("/study/{id}")
+    public String viewGroupDetail(@PathVariable("id") Integer id, Model model,
+                                  @AuthenticationPrincipal PrincipalDetail principalDetai) {
 
-		StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(id);
-		model.addAttribute("data", studyGroup);
-		return "studyDetail";
-	}
+        StudyGroupDTO studyGroup = studyGroupService.getStudyGroupDetail(id);
+        model.addAttribute("data", studyGroup);
+        return "studyDetail";
+    }
 
-	// 마이페이지
-	@GetMapping("/mypage")
-	public String mypage(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
+    // 마이페이지
+    @GetMapping("/mypage")
+    public String mypage(@AuthenticationPrincipal PrincipalDetail principalDetai, Model model) {
 
-		// 사용자 정보 가져오기
-		User user = principalDetai.getUser();
-		model.addAttribute("user", user);
-		return "mypage";
-	}
+        // 사용자 정보 가져오기
+        User user = principalDetai.getUser();
+        model.addAttribute("user", user);
+        return "mypage";
+    }
 
-	// 자주 묻는 질문
-	@GetMapping("/faq")
-	public String inquey() {
-		return "faq";
-	}
+    // 자주 묻는 질문
+    @GetMapping("/faq")
+    public String inquey() {
+        return "faq";
+    }
 
-	// 1 :1 문의
-	@GetMapping("/inquiry")
-	public String inquiry() {
-		return "inquiry";
-	}
+    // 1 :1 문의
+    @GetMapping("/inquiry")
+    public String inquiry() {
+        return "inquiry";
+    }
 
-	// 공지사항
-	@GetMapping("/notice")
-	public String notice() {
-		return "notice";
-	}
+    // 공지사항
+    @GetMapping("/notice")
+    public String notice() {
+        return "notice";
+    }
 
+    //소셜 로그인 시 정보 입력
+    @GetMapping("social-signup")
+    public String socialSignup() {
 
-
+        return "socialSignup";
+    }
 
 }

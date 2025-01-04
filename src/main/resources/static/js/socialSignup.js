@@ -1,8 +1,6 @@
 $(document).ready(function () {
 
     //닉네임 중복 검사
-
-
     $('#sendCodeBtn').on('click', function () {
 
         const email = $('#email').val();
@@ -14,12 +12,12 @@ $(document).ready(function () {
             data: {email: email}, // JSON 형식으로 데이터를 보냄
             success: function (response) {
                 if (response.status === 'success') {
+
                     //인증번호 전송 -> 확인 으로 변경
 
                     // 인증번호 전송 버튼 숨기기, 확인 버튼 보이기
                     $('#sendCodeBtn').addClass('hidden');
                     $('#checkCodeBtn').removeClass('hidden');
-
 
                     let timeLeft = response.validTime;
                     const countdownDisplay = $('#countdown');
@@ -79,29 +77,22 @@ $(document).ready(function () {
 
     //데이터 전송
     $('#scSubmitButtons').on('click', function () {
-        const sns = $(this).data('sns'); // 버튼의 data-sns 값을 가져옴
         const nickname = $('#nickname').val();
         const email = $('#email').val();
 
         $.ajax({
             url: '/api/user/social/info', // 서버의 엔드포인트 URL
             type: 'POST',
-            data: {sns: sns, nickname: nickname, email: email}, // JSON 형식으로 데이터를 보냄
+            data: {nickname: nickname, email: email}, // JSON 형식으로 데이터를 보냄
             success: function (response) {
-                let redirectURL = response.data.redirectURL;
-                // 페이지 이동
-                if (redirectURL) {
-                    window.location.href = redirectURL; // redirectURL로 페이지 이동
-                } else {
-                    console.error("Redirect URL is not provided.");
-                }
+
+                window.location.href = "/study"; // redirectURL로 페이지 이동
 
             }, error: function (xhr, status, error) {
                 console.log(xhr.responseJSON.message);
                 console.error("Error submitting form:", error);
             }
         });
-
 
         /*switch (sns) {
             case "kakao":

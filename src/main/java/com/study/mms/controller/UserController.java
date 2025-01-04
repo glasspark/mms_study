@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
 
+import com.study.mms.model.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -238,8 +239,9 @@ public class UserController {
     @PostMapping("/social/info")
     @Operation(summary = "소셜로그인 닉네임 확인", description = "소셜로그인 닉네임 인증")
     public ResponseEntity<Map<String, Object>> checkSocialLoginUserInfo(
-            @RequestParam("nickname") String nickname, HttpServletRequest req, @RequestParam("sns") String sns, @RequestParam("email") String email
-    ) {
-        return userService.checkSocialLoginUserInfo(nickname, email, req, sns);
+            @RequestParam("nickname") String nickname, HttpServletRequest req, @RequestParam("email") String email
+            ,HttpServletRequest request) {
+
+        return userService.checkSocialLoginUserInfo(nickname, email, req, request);
     }
 }

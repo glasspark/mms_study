@@ -48,6 +48,7 @@ public class NaverService {
         if (request.getServerPort() != 80 && request.getServerPort() != 443) { // http, https 일때는 포트 번호가 사용되지 않음
             redirect_uri = redirect_uri + ":" + request.getServerPort();
         }
+
         redirect_uri = redirect_uri + "/auth/naver-login"; // 로그인 후 처리할 controller mapping
 
         SecureRandom random = new SecureRandom();
@@ -67,12 +68,7 @@ public class NaverService {
     public String naverOauth(String code, HttpServletRequest request) throws Exception {
 
         if (code == null) { // 취소버튼 눌렀을 때
-           //  return "/auth/clientNaverLoginPage";
-
-            System.out.println("데이터 정보가 없습니다.");
-
-            return "/auth/login-return/naver";
-            //return "/";
+            return "/";
         }
 
         String accessToken = getNaverAccessToken(code);
@@ -84,21 +80,6 @@ public class NaverService {
         // ============유저 로그인 샘플===============
         User searchUserinfo = usersRepository.findBySnsAndSnsId("NAVER", snsId).orElse(null);
 
-        //     int step = Integer.parseInt(request.getSession().getAttribute("step").toString());
-
-        HttpSession session = request.getSession();
-
-
-        Boolean isAuthenticated = (Boolean) session.getAttribute("isAuthenticated");
-        String authEmail = (String) session.getAttribute("authEmail");
-        String authNickname = (String) session.getAttribute("authNickname");
-
-        System.out.println(searchUserinfo.getId());
-
-        //세션에 저장된 유저의 데이터가 없으면 이동
-        if (authEmail == null || authNickname == null || searchUserinfo == null) {
-      //      return "/auth/login-return/naver";
-        }
 
         if (searchUserinfo == null) {
 
@@ -112,15 +93,8 @@ public class NaverService {
                 }
             }
 
-
-            //세션에서 가져온 값 넣기
-            String nickname = authNickname;
-            String email = authEmail;
-
-            //인증을 위한 세션 삭제하기
-            session.removeAttribute("isAuthenticated");
-            session.removeAttribute("authEmail");
-            session.removeAttribute("authNickname");
+            String nickname = "not_nickname_" + count;
+            String email = "not_email_" + count;
 
             String username = "naver_" + id;
             searchUserinfo = new User();
