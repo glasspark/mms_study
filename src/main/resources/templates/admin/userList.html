@@ -51,17 +51,15 @@
             <!-- 카테고리 선택 및 상태 선택 -->
             <div class="d-flex gap-2">
               <select class="form-select w-auto" name="category"
-                      aria-label="Category Select">
-                <option value="all">카테고리</option>
-                <option value="pending">서비스 오류</option>
-                <option value="account">계정</option>
-                <option value="study">스터디</option>
-                <option value="board">게시판</option>
+                      aria-label="Category Select"  id="category">
+                <option value="default">카테고리</option>
+                <option value="nickname">닉네임</option>
+                <option value="email">이메일</option>
               </select>
             </div>
 
             <!-- 검색어 입력 -->
-            <input type="text" class="form-control w-25" name="searchQuery"
+            <input type="text" class="form-control w-25" name="searchQuery" id="search"
                    placeholder="검색어를 입력하세요">
 
             <!-- 검색 버튼 -->

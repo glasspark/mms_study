@@ -1,16 +1,37 @@
 let currentPage = 1;
+let content = null;
+let type = null;
+
 $(document).ready(function () {
 
-    getData(1)
+    getData(currentPage, type, content)
 
     // 페이징 버튼 클릭 이벤트
-    $('#pagination').on('click', '.page-link', function() {
+    $('#pagination').on('click', '.page-link', function () {
         const page = $(this).data('page');
-        getData(page); // 현재 검색 조건을 유지한 채로 페이지 이동
+        getData(page, type, content); // 현재 검색 조건을 유지한 채로 페이지 이동
+    });
+
+
+    //검색하여 조건 검색 시
+    $(document).on('click', '#searchBtn', function () {
+
+        let search = $('#search').val();
+        let category = $('#category').val();
+
+        if (category !== 'nickname' && category !== 'email') {
+            alert("카테고리를 선택해 주세요");
+        }
+
+        content = search;
+        type = category;
+
+        getData(currentPage, type, content)
+
     });
 
     //회원 탈퇴
-    $(document).on('click', '.delete-user', function() {
+    $(document).on('click', '.delete-user', function () {
         const id = $(this).data('id');
         $.ajax({
             url: `/api/admin/users/${id}`,
@@ -25,21 +46,29 @@ $(document).ready(function () {
         });
     });
 
-    function getData(page) {
+    function getData(page, type, content) {
+
+        if (type == null || type == '') {
+            type = null;
+        }
+
+        if (content == null || content == '') {
+            content = null;
+        }
 
         $.ajax({
             url: `/api/admin/users`,
             type: "GET",
             data: {
                 page: page,
-                type: null,
-                content: null
+                type: type,
+                content: content
             },
             success: function (response) {
                 console.log(response)
                 setData(response.data);
                 currentPage = response.page.pagination.currentPage;
-                createPagination(response.page.pagination.totalPages, response.page.pagination.currentPage) ;
+                createPagination(response.page.pagination.totalPages, response.page.pagination.currentPage);
             },
             error: function (xhr, status, error) {
                 console.log(xhr)
