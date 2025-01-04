@@ -120,7 +120,7 @@ $(document).ready(function() {
 				// 성공적으로 응답을 받았을 때 실행할 코드
 				console.log('Success:', response);
 				alert("비밀번호 변경 성공");
-				window.location.href = '/home';
+				window.location.href = '/study';
 			},
 			error: function(xhr, status, error) {
 				// 에러가 발생했을 때 실행할 코드
@@ -132,7 +132,7 @@ $(document).ready(function() {
 
 	//메인 이동 버튼
 	$('.go-main').on('click', function() {
-		window.location.href = '/home';
+		window.location.href = '/study';
 	});
 
 });
