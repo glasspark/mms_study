@@ -7,7 +7,9 @@ import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 
 import com.study.mms.model.User;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.validation.BindingResult;
@@ -36,6 +38,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import lombok.RequiredArgsConstructor;
 
+@Slf4j
 @RestController
 @RequiredArgsConstructor // 생성자 의존성 주입
 @RequestMapping("/api/user")
@@ -243,5 +246,13 @@ public class UserController {
             ,HttpServletRequest request) {
 
         return userService.checkSocialLoginUserInfo(nickname, email, req, request);
+    }
+
+    // ================ 회원 탈퇴 ================
+    @ResponseBody
+    @DeleteMapping("/account")
+    @Operation(summary = "회원 삭제 API", description = "관리자 페이지 회원 삭제 API")
+    public ResponseEntity<Map<String, Object>> deleteUser( HttpServletRequest req , @AuthenticationPrincipal PrincipalDetail principalDetail) throws Exception {
+        return userService.deleteUser( req , principalDetail);
     }
 }

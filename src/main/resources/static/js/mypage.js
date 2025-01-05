@@ -264,6 +264,24 @@ $(document).ready(function() {
 			}
 		});
 	});
+
+
+	// 회원탈퇴
+	$(document).on('click', '#userDeleteBtn', function() {
+		if (confirm('회원탈퇴를 하시겠습니까?')) {
+			// AJAX 요청으로 탈퇴 처리
+			$.ajax({
+				url: `/api/user/account`,
+				type: 'DELETE',
+				success: function(response) {
+					window.location.href = '/';
+				},
+				error: function(xhr, status, error) {
+					window.location.href = '/';
+				}
+			});
+		}
+	});
 });
 
 

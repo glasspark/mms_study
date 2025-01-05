@@ -31,11 +31,15 @@ $(document).ready(function() {
 		showContent('appliedStudyListsContent');
 	});
 
-
-
 	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
 	$('#showInquiry').on('click', function() {
 		showContent('infoInquiryContent');
+	});
+
+
+	// 사이드바 이벤트 관련 (클릭 시 보여줄 각 항목의 리스트들)
+	$('#showWithdrawal').on('click', function() {
+		showContent('infoDeleteContent');
 	});
 
 });

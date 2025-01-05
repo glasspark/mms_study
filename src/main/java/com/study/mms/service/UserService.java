@@ -15,6 +15,8 @@ import javax.transaction.Transactional;
 import com.study.mms.constants.ErrorCode;
 import com.study.mms.constants.SuccessCode;
 import com.study.mms.exception.CustomException;
+import com.study.mms.model.*;
+import com.study.mms.repository.*;
 import com.study.mms.util.ResponseUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -35,20 +37,6 @@ import com.study.mms.dto.TodoDTO;
 import com.study.mms.dto.UsersJoinDTO;
 import com.study.mms.dto.joinRequestDTO;
 import com.study.mms.dto.updatePasswordDTO;
-import com.study.mms.model.Attendance;
-import com.study.mms.model.Inquiry;
-import com.study.mms.model.StudyGroup;
-import com.study.mms.model.StudyGroupJoinRequest;
-import com.study.mms.model.StudyGroupMember;
-import com.study.mms.model.Todo;
-import com.study.mms.model.User;
-import com.study.mms.repository.AttendanceRepository;
-import com.study.mms.repository.InquiryRepository;
-import com.study.mms.repository.StudyGroupJoinRequestRepository;
-import com.study.mms.repository.StudyGroupMemberRepository;
-import com.study.mms.repository.StudyGroupRepository;
-import com.study.mms.repository.TodoRepository;
-import com.study.mms.repository.UserRepository;
 import com.study.mms.util.ImageUploader;
 
 import lombok.RequiredArgsConstructor;
@@ -65,6 +53,7 @@ public class UserService {
     private final InquiryRepository inquiryRepository;
     private final StudyGroupRepository studyGroupRepository;
     private final SendEmail sendEmail;
+    private final AdminUserService adminUserService;
 
     private final BCryptPasswordEncoder passwordEncoder;
 
@@ -1002,7 +991,7 @@ public class UserService {
 
         Optional<User> userinfo = usersRepository.findByUsername(authentication.getName());
 
-        if(userinfo.isPresent()){
+        if (userinfo.isPresent()) {
             User user = userinfo.get();
             user.setNickname(nickname);
             user.setEmail(email);
@@ -1019,4 +1008,20 @@ public class UserService {
         return ResponseUtil.buildSuccessResponse(HttpStatus.CREATED, SuccessCode.DATA_CREATED.getMessage());
     }
 
+    public ResponseEntity<Map<String, Object>> deleteUser(HttpServletRequest req, PrincipalDetail principalDetail) throws Exception {
+
+        if (principalDetail != null) {
+
+            User user = principalDetail.getUser();
+            Optional<User> optionalUser = usersRepository.findById(user.getId());
+
+            if (optionalUser.isPresent()) {
+                User userInfo = optionalUser.get();
+                adminUserService.deleteUser(userInfo.getId(), req);
+            } else {
+                throw new CustomException(ErrorCode.USER_NOT_FOUND);
+            }
+        }
+            throw new CustomException(ErrorCode.USER_NOT_FOUND);
+    }
 }

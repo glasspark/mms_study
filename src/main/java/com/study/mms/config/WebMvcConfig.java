@@ -21,7 +21,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
         registry.addInterceptor(userInterceptor)
                 .addPathPatterns("/**") // 모든 요청에 대해 인터셉터 적용
                 //   .excludePathPatterns("/static/**", "/public/**", "/favicon.ico"); // 정적 자원 제외
-                .excludePathPatterns("/css/**", "/js/**", "/images/**", "/favicon.ico", "/auth/**","/api/**"); // 정적 자원 제외
+                .excludePathPatterns("/css/**", "/js/**", "/img/**", "/favicon.ico", "/auth/**","/api/**"); // 정적 자원 제외
     }
 
     @Override

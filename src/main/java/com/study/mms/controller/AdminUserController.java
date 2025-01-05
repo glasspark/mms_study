@@ -24,7 +24,7 @@ public class AdminUserController {
 
     @ResponseBody
     @GetMapping("/users")
-    @Operation(summary = "이용자 데이터 필터링 및 반환 API", description = "관리자 페이지 이용자 데이터 필터링 및 페이징 API")
+    @Operation(summary = "회원 데이터 필터링 및 반환 API", description = "관리자 페이지 회원 데이터 필터링 및 페이징 API")
     public ResponseEntity<Map<String, Object>> getAdminUsersInfo(
             @RequestParam(value = "page", required = false, defaultValue = "1") Integer page, @RequestParam(value = "type", required = false) String type, @RequestParam(value = "content", required = false) String content) {
         return adminUserService.getUsers(page, type, content);
@@ -33,7 +33,7 @@ public class AdminUserController {
     @ResponseBody
     @DeleteMapping("/users/{id}")
     @PreAuthorize("hasAuthority('ROLE_ADMIN')")
-    @Operation(summary = "이용자 삭제 API", description = "관리자 페이지 이용자 삭제 API")
+    @Operation(summary = "회원 삭제 API", description = "관리자 페이지 회원 삭제 API")
     public ResponseEntity<Map<String, Object>> deleteUser(@PathVariable Integer id, HttpServletRequest req) throws Exception {
         return adminUserService.deleteUser(id, req);
     }
