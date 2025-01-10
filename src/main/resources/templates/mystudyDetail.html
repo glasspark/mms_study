@@ -116,9 +116,12 @@
 									<div class="card border-0 rounded-4">
 										<div class="card-body" id="content">
 											<div id="study" class="content-section d-none">
-												<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
+												<div class="d-flex justify-content-between">
+													<h3 class="fw-bold" th:text="${studyGroup.name}"></h3>
+												<!--	<a class="move-study-update"> <i class="bi bi-pencil-square fs-4"></i>
+													</a>-->
+												</div>
 												<hr>
-
 												<!-- 방장과 부방장 정보를 같은 행에 나란히 배치 -->
 												<div class="row mb-3">
 													<div class="col">

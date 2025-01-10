@@ -329,7 +329,7 @@ function getApplicationLists() {
 		},
 		error: function() {
 			alert('일정 삭제에 실패했습니다.');
-			callback(false);
+			//callback(false);
 		}
 	});
 }
