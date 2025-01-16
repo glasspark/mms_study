@@ -74,17 +74,20 @@ public class SecurityConfig {
                             HttpSession session = request.getSession();
                             session.invalidate();
                         }).logoutSuccessHandler(customLogoutSuccessHandler).permitAll())
+                //remember 설정
                 .rememberMe().key("uniqueAndSecretKey").rememberMeParameter("remember-me")
                 .tokenRepository(tokenRepository()).tokenValiditySeconds(15552000) // 쿠키 시간 반년으로 설정
                 .userDetailsService(principalDetailService).and()
                 .exceptionHandling(exceptionHandling -> exceptionHandling.accessDeniedHandler(new LoginDeniedHandler())
                         .authenticationEntryPoint((request, response, authException) -> {
+                            // 인증되지 않은 사용자가 보호된 자원에 접근할 때(세션 만료 등 포함),
                             response.sendRedirect("/?sessionExpired=true"); // 세션 만료 시 로그인 페이지로 리다이렉트
                         }))
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) //세션 연결 1명으로 제한
                         .maxSessionsPreventsLogin(false) //신규 요청이 오면 기존 사용자의 세션을 만료 시켜버림
-                        .expiredUrl("/?sessionExpired=true") //세션이 만료되면 이동할 페이지
+                        //    .expiredUrl("/?sessionExpired=true") //세션이 만료되면 이동할 페이지
+                        .expiredUrl("/logout") //세션이 만료되면 이동할 페이지
                 );
         return http.build();
     }

@@ -34,13 +34,18 @@ public class MainController {
 
     //메인페이지
     @GetMapping("/")
-    public String showLoginPage(HttpServletRequest request, Model model) {
+    public String showLoginPage(HttpServletRequest request, Model model, @AuthenticationPrincipal PrincipalDetail principalDetail) {
         // Flash Attribute 읽기
         String loginFailMsg = (String) request.getSession().getAttribute("loginFailMsg");
 
         if (loginFailMsg != null) {
             model.addAttribute("loginFailMsg", loginFailMsg);
             request.getSession().removeAttribute("loginFailMsg"); // 한 번 사용 후 삭제
+        }
+
+        //만약 로그인을 한 사용자가 메인으로 돌아가고자 한다면 로그인 후 메인 화면으로 이동 되도록
+        if (principalDetail != null) {
+            return "/study";
         }
         return "index"; // login.html로 렌더링
     }

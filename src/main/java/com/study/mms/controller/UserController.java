@@ -72,7 +72,7 @@ public class UserController {
     // 아이디 찾기
     @ResponseBody
     @PostMapping("/help/inquiry")
-    @Operation(summary = "아이디, 비밀번호 찾기 API", description = "아이디, 비밀번호 찾기  API")
+    @Operation(summary = "아이디, 비밀번호 찾기 이메일 전송 API", description = "아이디, 비밀번호 찾기에서 인증번호 전송 API")
     public Map<String, Object> helpIdInqury(@RequestParam("email") String email, HttpServletRequest req,
                                             @RequestParam("type") String type) {
         return userService.helpIdAndPwInqury(email, type, req);
@@ -80,7 +80,7 @@ public class UserController {
 
     @ResponseBody
     @PostMapping("/process/inquiry")
-    @Operation(summary = "아이디, 비밀번호 찾기 인증  API", description = "아이디 찾기 인증 API")
+    @Operation(summary = "아이디, 비밀번호 찾기 후 인증키 인증  API", description = "아이디, 비밀번호 찾기 후 인증키 인증 API")
     public Map<String, Object> processAccountInquiry(@RequestParam("key") String key,
                                                      @RequestParam("email") String email, HttpServletRequest req) {
         return sendEmail.verifyAuthCode(key, email, req);
@@ -88,10 +88,10 @@ public class UserController {
 
     @ResponseBody
     @PatchMapping("/help/inquiry")
-    @Operation(summary = "아이디, 비밀번호 찾기 인증  API", description = "아이디 찾기 인증 API")
+    @Operation(summary = "비밀번호 변경  API", description = "비밀번호 찾기 인증 후 비밀번호 변경 API")
     public Map<String, Object> helpChangeUserPassword(@RequestParam("newPassword") String newPassword,
-                                                      @RequestParam("passwordCheck") String passwordCheck, @RequestParam("email") String email) {
-        return userService.helpChangeUserPassword(newPassword, passwordCheck, email);
+                                                      @RequestParam("passwordCheck") String passwordCheck, @RequestParam("email") String email, HttpServletRequest req) {
+        return userService.helpChangeUserPassword(newPassword, passwordCheck, email, req);
     }
 
     // ================ 마이페이지 ================
@@ -243,7 +243,7 @@ public class UserController {
     @Operation(summary = "소셜로그인 닉네임 확인", description = "소셜로그인 닉네임 인증")
     public ResponseEntity<Map<String, Object>> checkSocialLoginUserInfo(
             @RequestParam("nickname") String nickname, HttpServletRequest req, @RequestParam("email") String email
-            ,HttpServletRequest request) {
+            , HttpServletRequest request) {
 
         return userService.checkSocialLoginUserInfo(nickname, email, req, request);
     }
@@ -252,7 +252,7 @@ public class UserController {
     @ResponseBody
     @DeleteMapping("/account")
     @Operation(summary = "회원 삭제 API", description = "관리자 페이지 회원 삭제 API")
-    public ResponseEntity<Map<String, Object>> deleteUser( HttpServletRequest req , @AuthenticationPrincipal PrincipalDetail principalDetail) throws Exception {
-        return userService.deleteUser( req , principalDetail);
+    public ResponseEntity<Map<String, Object>> deleteUser(HttpServletRequest req, @AuthenticationPrincipal PrincipalDetail principalDetail) throws Exception {
+        return userService.deleteUser(req, principalDetail);
     }
 }

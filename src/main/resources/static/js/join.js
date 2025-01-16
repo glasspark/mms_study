@@ -23,7 +23,6 @@ $(document).ready(function () {
             type: 'POST',
             data: {email: email}, // JSON 형식으로 데이터를 보냄
             success: function (response) {
-                console.log(response)
                 if (response.status === 'success') {
                     //인증번호 전송 -> 확인 으로 변경
                     // 인증번호 전송 버튼 숨기기, 확인 버튼 보이기

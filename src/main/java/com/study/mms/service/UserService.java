@@ -200,6 +200,10 @@ public class UserService {
         user.setImg_path("/img/defaultImg.png");
         user.setSns("DEFAULT");
         usersRepository.save(user);
+        
+        //이메일 인증 유효성 검사 세션에 값 삭제
+        session.removeAttribute("certificationsCount");
+        session.removeAttribute("certificationsTime");
 
         returnMap.put("status", "success");
         returnMap.put("message", "회원가입이 완료되었습니다.");
@@ -901,7 +905,7 @@ public class UserService {
 
     // 비밀번호 찾기 비밀번호 변경
     @Transactional
-    public Map<String, Object> helpChangeUserPassword(String newPassword, String passwordCheck, String email) {
+    public Map<String, Object> helpChangeUserPassword(String newPassword, String passwordCheck, String email , HttpServletRequest req) {
 
         Map<String, Object> returnMap = new HashMap<>();
 
@@ -933,6 +937,14 @@ public class UserService {
                 user.setSalt(salt);
                 user.setPassword(encPassword);
                 usersRepository.save(user);
+
+                // 세션에 인증코드와 관련 정보 저장
+                HttpSession session = req.getSession();
+
+
+                //인증되면 삭제 처리
+                session.removeAttribute("certificationsCount");
+                session.removeAttribute("certificationsTime");
 
                 returnMap.put("status", "success");
                 returnMap.put("message", "비밀번호가 변경 되었습니다.");
