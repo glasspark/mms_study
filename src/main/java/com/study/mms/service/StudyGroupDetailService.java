@@ -196,16 +196,13 @@ public class StudyGroupDetailService {
 			StudyGroup studyGroup = studyGroupRepository.findById(groupId)
 					.orElseThrow(() -> new IllegalArgumentException("스터디 그룹을 찾을 수 없습니다."));
 
-			// 현재 사용자가 방장인지 확인(equals 두 객체가 같은지 비교)
-//			if (!studyGroup.getLeader().getId().equals(user.getId())) {
-//				throw new IllegalArgumentException("해당 스터디 그룹의 방장이 아닙니다.");
-//			}
 
 			// 현재 사용자가 방장 또는 부방장인지 확인
 			if (!studyGroup.getLeader().getId().equals(user.getId())
 					&& (studyGroup.getSubLeader() == null || !studyGroup.getSubLeader().getId().equals(user.getId()))) {
 				throw new AccessDeniedException("권한이 없습니다.");
 			}
+
 
 			// 가입 신청 리스트 가져오기
 			List<StudyGroupJoinRequest> joinRequests = joinRequestRepository.findByStudyGroupAndStatus(studyGroup,

@@ -88,7 +88,7 @@
 												class="bi bi-chat-left-text-fill me-2"></i>게시판
 										</a></li>
 										<!-- 가입신청 버튼은 LEADER 또는 SUB_LEADER일 경우 보임 -->
-										<li class="nav-item mb-2"
+										<li class="nav-item mb-2"  id="userApplications"
 											th:if="${userRole == 'LEADER' || userRole == 'SUB_LEADER'}">
 											<a class="nav-link text-dark rounded-2" href="#"
 											data-target="application"> <i

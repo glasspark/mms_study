@@ -113,6 +113,13 @@ $(document).ready(function () {
                     alert("회원가입이 완료되었습니다.");
                     window.location.href = '/';
                 }
+
+                if(response.status === 'fail'){
+                      Swal.fire({
+                        text:response.message,
+                        icon: 'warning', // 'success', 'error', 'warning', 'info', 'question'
+                    });
+                }
             },
             error: function (xhr, status, error) {
                 alert("Failed to submit form.");

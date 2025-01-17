@@ -2,7 +2,7 @@ $(document).ready(function() {
 
 	getFileList(); //공유 파일 리스트 
 	getMemberList();//멤버들의 리스트
-	getApplicationLists(); //일정 리스트
+	//getApplicationLists(); //일정 리스트
 	getBoardList(); //게시판 리스트 가져오기
 
 	// 작성하기 버튼 클릭 시 페이지 이동 이벤트
@@ -10,6 +10,11 @@ $(document).ready(function() {
 		let num = $('#groupId').val(); // groupId 값 가져오기
 		window.location.href = `/mystudy/detail/board/${num}`;
 	});
+
+	// 가입신청 리스트 클릭 시 데이터 가져오기
+    $('#userApplications').on('click', function() {
+    getApplicationLists();
+    });
 
 	//사이드바
 	const defaultSection = localStorage.getItem('activeSection') || 'study';
@@ -52,8 +57,7 @@ $(document).ready(function() {
 		// If the schedule section is clicked, adjust the calendar size
 		if (target === 'schedule') {
 			calendar.updateSize(); // 크기 재계산
-			getApplicationLists(); //일정 리스트
-
+            getLEventListsToServer();
 		}
 
 	});

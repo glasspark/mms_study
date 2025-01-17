@@ -79,7 +79,7 @@ public class StudyGroupDetailController {
 
 	@ResponseBody
 	@PostMapping("/application/process")
-	@Operation(summary = "스터디 그룹 상세 가입신청 리스트  API", description = "스터디그룹 상세페이지에서 가입신청 리스트 가져오기 API")
+	@Operation(summary = "스터디 그룹 상세 가입신청 승인/거절  API", description = "스터디그룹 상세페이지에서 가입신청 승인/거절 API")
 	public Map<String, Object> applicationJoinRequestProcess(@AuthenticationPrincipal PrincipalDetail principalDetail,
 			@RequestParam Integer groupId, @RequestParam Integer requestId, @RequestParam String status) {
 		return studyGroupDetailService.applicationJoinRequestProcess(principalDetail, groupId, requestId, status);
