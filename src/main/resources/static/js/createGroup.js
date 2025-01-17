@@ -10,6 +10,13 @@ $(document).ready(function() {
 			const newTag = $(this).val().trim();
 
 			if (newTag && !tags.includes(newTag) && tags.length < 5) {
+
+			    //여기서 쉼표가 들어가 있는지 유효성 검사 확인
+                if(newTag.includes(',')){
+                alert("태그에 쉼표는 포함할 수 없습니다.");
+                return;
+                }
+
 				tags.push(newTag);
 
 				// 새로운 태그를 UI에 추가
@@ -46,6 +53,7 @@ $(document).ready(function() {
 	$('#register').on('click', function(e) {
 		let isValid = true;
 
+
 		// 스터디 그룹 이름 유효성 검사 (필수, 최대 20자)
 		const name = $('#name').val().trim();
 		if (name === '' || name.length > 20) {
@@ -78,18 +86,26 @@ $(document).ready(function() {
 		// AJAX 요청으로 서버에 폼 데이터 전송
 		$.ajax({
 			type: 'POST',
-			url: '/api/group/create', // 서버의 엔드포인트 URL로 변경하세요
+			url: '/api/group/create',
 			data: formData,
 			contentType: 'application/x-www-form-urlencoded',
 			success: function(response) {
 				console.log(response);
-				if (response.status === "error") {
-					// 오류 메시지 표시
-					for (const [field, message] of Object.entries(response.errors)) {
-						console.log(`필드: ${field}, 메시지: ${message}`);
-						$("#" + field + "-error").text(message).show();
-					}
-				} else {
+	             if (response.status === "error") {
+                    for (const [field, message] of Object.entries(response.errors)) {
+                        console.log(`필드: ${field}, 메시지: ${message}`);
+                        $("#" + field + "-error").text(message).show();
+//                for (const [field, message] of Object.entries(response.errors)) {
+//                console.log(`필드: ${field}, 메시지: ${message}`);
+//                const errorDiv = $("#" + field + "-error");
+//                if (errorDiv.length) {
+//                    errorDiv.text(message).show();
+//                } else {
+//                    console.error(`Error div not found for field: ${field}`);
+//                }
+
+                    }
+            } else {
 					// 성공 처리 (예: 페이지 리다이렉트)
 					alert(response.message);
 					window.location.href = "/study";

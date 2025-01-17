@@ -79,8 +79,9 @@
 								<div class="ps-3">
 									<label for="maxMembers" class="form-label mt-4">최대 인원 수</label>
 									<input type="number" th:field="*{maxMembers}"
-										class="form-control" id="maxMembers" min="1" max="20"
-										placeholder="최대 20명" required>
+										class="form-control" id="maxMembers" min="2" max="20"
+										placeholder="최소 2명 최대 20명" required >
+<!--									<div id="maxMembers-error" style="color: red; display: none;"></div>-->
 									<div th:if="${#fields.hasErrors('maxMembers')}"
 										th:errors="*{maxMembers}" style="color: red"></div>
 								</div>
@@ -90,7 +91,7 @@
 						<div class="studyGroupTag">
 
 							<!-- 숨겨진 필드 추가 (태그 데이터를 저장) -->
-							<input type="hidden" name="studyTag" id="tagsField" />
+							<input type="hidden" name="tag" id="tagsField" />
 
 							<div class="col-sm-10">
 								<label for="tags" class="form-label mt-4">태그 (최대 5개)</label> <input
@@ -99,7 +100,6 @@
 
 								<!-- 태그가 추가되는 영역 -->
 								<ul id="tagList" class="list-inline mt-2"></ul>
-
 								<div th:if="${#fields.hasErrors('tag')}" th:errors="*{tag}"
 									style="color: red"></div>
 							</div>

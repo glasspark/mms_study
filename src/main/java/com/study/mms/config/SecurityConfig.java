@@ -86,7 +86,6 @@ public class SecurityConfig {
                 .sessionManagement(sessionManagement -> sessionManagement
                         .maximumSessions(1) //세션 연결 1명으로 제한
                         .maxSessionsPreventsLogin(false) //신규 요청이 오면 기존 사용자의 세션을 만료 시켜버림
-                        //    .expiredUrl("/?sessionExpired=true") //세션이 만료되면 이동할 페이지
                         .expiredUrl("/logout") //세션이 만료되면 이동할 페이지
                 );
         return http.build();

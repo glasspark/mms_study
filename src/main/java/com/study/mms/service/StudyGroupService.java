@@ -66,6 +66,10 @@ public class StudyGroupService {
 
 			// 태그 값에서 마지막에 붙은 쉼표 제거
 			String tags = groupDTO.getTag();
+
+			System.out.println("태그의 내용은?");
+			System.out.println(tags);
+
 			if (tags != null && tags.endsWith(",")) {
 				tags = tags.substring(0, tags.length() - 1); // 마지막 쉼표 제거
 			}

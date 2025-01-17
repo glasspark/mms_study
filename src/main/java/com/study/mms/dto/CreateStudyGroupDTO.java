@@ -28,9 +28,9 @@ public class CreateStudyGroupDTO {
 	private String description; // 설명 최대 200자
 	private String subLeader; // 생략 가능
 	@NotNull(message = "최대 인원 수는 필수입니다.")
-	@Min(value = 1, message = "최소 인원 수는 1명입니다.")
+	@Min(value = 2, message = "최소 인원 수는 2명입니다.")
 	@Max(value = 20, message = "최대 인원 수는 20명입니다.")
 	private Integer maxMembers; // 1~20명까지
-	@Pattern(regexp = "^[^,]*$", message = "태그에 쉼표(,)는 포함될 수 없습니다.")
+//	@Pattern(regexp = "^[^,]*$", message = "태그에 쉼표(,)는 포함될 수 없습니다.")
 	private String tag;
 }

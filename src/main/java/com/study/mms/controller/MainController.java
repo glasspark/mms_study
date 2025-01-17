@@ -4,9 +4,11 @@ import java.security.Principal;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.data.domain.Page;
 import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +34,7 @@ public class MainController {
     private final StudyGroupService studyGroupService;
     private final StudyGroupDetailService studyGroupDetailService;
 
+
     //메인페이지
     @GetMapping("/")
     public String showLoginPage(HttpServletRequest request, Model model, @AuthenticationPrincipal PrincipalDetail principalDetail) {
@@ -45,7 +48,7 @@ public class MainController {
 
         //만약 로그인을 한 사용자가 메인으로 돌아가고자 한다면 로그인 후 메인 화면으로 이동 되도록
         if (principalDetail != null) {
-            return "/study";
+            return "redirect:/study";
         }
         return "index"; // login.html로 렌더링
     }
@@ -83,7 +86,7 @@ public class MainController {
                         @RequestParam(value = "page", defaultValue = "0") int page,
                         @RequestParam(value = "type", defaultValue = "all") String type,
                         @RequestParam(value = "searchText", required = false) String searchText,
-                        @RequestParam(value = "tag", required = false) String tag) {
+                        @RequestParam(value = "tag", required = false) String tag ) {
 
         if ("null".equals(searchText) || "".equals(searchText)) {
             searchText = null;
@@ -91,6 +94,9 @@ public class MainController {
         if ("null".equals(tag) || "".equals(tag)) {
             tag = null;
         }
+
+
+
 
         Page<StudyGroupDTO> studyGroupsPage = studyGroupService.getStudyGroupLists(principalDetai, page, type,
                 searchText, tag);
