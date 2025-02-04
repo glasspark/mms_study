@@ -19,7 +19,7 @@ Thymeleaf, Bootstrap, JavaScript (jQuery, AJAX 활용)
 - **모집 게시판**: 현재 모집 중인 스터디를 한눈에 확인하고 신청할 수 있습니다.
 - **스터디 일정 관리**: 캘린더를 활용해 그룹의 학습 일정을 공유하고 관리할 수 있습니다.
 - **게시판 및 자료 공유**: 스터디 멤버 간 커뮤니케이션을 위한 게시판과 파일 공유 기능을 제공합니다.
-- **댓글 및 대화**: 스터디원들과 자유롭게 의견을 나눌 수 있는 댓글 기능을 지원합니다.
+- **댓글 및 대화**: 스터디원들과 자유롭게 의견을 나눌 수 있는 댓글 및 답댓글 기능을 지원합니다.
 
 ### 🔧 관리자 기능
 - **스터디 그룹 승인 및 관리**: 생성된 스터디를 승인하고, 부적절한 그룹을 관리할 수 있습니다.
@@ -32,7 +32,49 @@ Thymeleaf, Bootstrap, JavaScript (jQuery, AJAX 활용)
 ## 🖥️페이지 구성
 ![스크린샷 2025-02-04 125012](https://github.com/user-attachments/assets/f7f33040-0f41-4b11-bbcb-5d319cb82e9a)
 ![스크린샷 2025-02-04 125056](https://github.com/user-attachments/assets/81484223-5c7f-49d3-9494-e8a66da7f7ac)
-
-
-
-
+  <br>
+  <br>
+## 프로젝트 구조
+```
+├─mms
+│  ├─src
+│  │  ├─main
+│  │  │  ├─java
+│  │  │  │  └─com
+│  │  │  │      └─study
+│  │  │  │          └─mms
+│  │  │  │              ├─advice
+│  │  │  │              ├─auth
+│  │  │  │              ├─common
+│  │  │  │              ├─config
+│  │  │  │              ├─constants
+│  │  │  │              ├─controller
+│  │  │  │              ├─dto
+│  │  │  │              ├─exception
+│  │  │  │              ├─handler
+│  │  │  │              ├─model
+│  │  │  │              ├─repository
+│  │  │  │              ├─service
+│  │  │  │              ├─social
+│  │  │  │              └─util
+│  │  │  ├─resources
+│  │  │  │  ├─static
+│  │  │  │  │  ├─css
+│  │  │  │  │  │  └─admin
+│  │  │  │  │  ├─img
+│  │  │  │  │  └─js
+│  │  │  │  │      ├─admin
+│  │  │  │  │      └─ckeditor
+│  │  │  │  └─templates
+│  │  │  │      ├─admin
+│  │  │  │      └─error
+│  │  │  └─webapp
+│  │          
+└─upload
+    ├─board
+    ├─groupFile
+    ├─notice
+    ├─profile
+    ├─studyBoard
+    └─temp
+```
