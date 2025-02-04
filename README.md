@@ -22,3 +22,8 @@ MMS(모두모여 스터디)는 스터디 그룹을 생성하고, 모집하고, �
   <br>
   <br>
 ## 🛠️ 기술 스택
+#### Backend
+Java, Spring Boot, JPA & Hibernate, Mysql, Swagger (API 문서화)
+#### Frontend
+Thymeleaf, Bootstrap, JavaScript (jQuery, AJAX 활용)
+
