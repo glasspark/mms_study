@@ -29,7 +29,7 @@ Thymeleaf, Bootstrap, JavaScript (jQuery, AJAX 활용)
   <br>
   <br>
 
-### 🖥️페이지 구성
+## 🖥️페이지 구성
 ![스크린샷 2025-02-04 125012](https://github.com/user-attachments/assets/f7f33040-0f41-4b11-bbcb-5d319cb82e9a)
 ![스크린샷 2025-02-04 125056](https://github.com/user-attachments/assets/81484223-5c7f-49d3-9494-e8a66da7f7ac)
 
